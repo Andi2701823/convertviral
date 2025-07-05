@@ -38,13 +38,20 @@ export const generateMetadata = async (): Promise<Metadata> => {
   };
 };
 
+import enMessages from '../i18n/en.json';
+import deMessages from '../i18n/de.json';
 export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   const locale = await getLocale();
-  const messages = await getMessages();
+  let messages;
+  if (locale === 'de') {
+    messages = deMessages;
+  } else {
+    messages = enMessages;
+  }
   
   // Organization structured data
   const orgStructuredData = {

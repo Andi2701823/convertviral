@@ -73,6 +73,7 @@ app.prepare().then(() => {
             
             // Send progress update
             socket.emit('progress', {
+              stage: (job as any).stage,
               jobId,
               status: job.status,
               progress,

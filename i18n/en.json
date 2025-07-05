@@ -1,0 +1,23 @@
+{
+  "about": {
+    "title": "About ConvertViral",
+    "subtitle": "Convert any file format with ease. Fast, secure, and reliable.",
+    "description": "ConvertViral is your all-in-one file conversion platform, supporting 100+ formats with real-time progress, batch processing, and legal compliance."
+  },
+  "footer": {
+    "impressum": "Impressum",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "cookies": "Cookie Policy",
+    "agb": "AGB",
+    "datenschutz": "Datenschutzerklärung"
+  },
+  "not_found": {
+    "title": "Page Not Found",
+    "description": "Sorry, the page you are looking for does not exist.",
+    "back_home": "Back to Home"
+  },
+  "loading": {
+    "loading": "Loading... Please wait."
+  }
+}

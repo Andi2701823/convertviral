@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getTestContent = exports.getTestVariant = exports.abTests = void 0;
 exports.trackTestConversion = trackTestConversion;
-var analytics_1 = require("./analytics");
+const analytics_1 = require("./analytics");
 // Define available A/B tests
 exports.abTests = {
     'conversion-button': {
@@ -39,7 +39,7 @@ exports.abTests = {
     },
 };
 // A/B Testing Configuration
-var testConfigurations = {
+const testConfigurations = {
     'conversion-button': {
         variants: ['default', 'large-green', 'animated'],
         weights: [0.33, 0.33, 0.34], // Must sum to 1
@@ -51,47 +51,46 @@ var testConfigurations = {
     // Add more test configurations as needed
 };
 // Check if A/B testing is enabled
-var isABTestingEnabled = process.env.NEXT_PUBLIC_ENABLE_AB_TESTING === 'true';
+const isABTestingEnabled = process.env.NEXT_PUBLIC_ENABLE_AB_TESTING === 'true';
 /**
  * Get the variant for a specific test
  * @param testId - The ID of the test
  * @returns The variant assigned to the user
  */
-var getTestVariant = function (testId) {
-    var _a, _b;
+const getTestVariant = (testId) => {
     // If A/B testing is disabled, always return the default variant
     if (!isABTestingEnabled) {
-        return ((_a = testConfigurations[testId]) === null || _a === void 0 ? void 0 : _a.variants[0]) || 'default';
+        return testConfigurations[testId]?.variants[0] || 'default';
     }
     if (typeof window === 'undefined') {
         // Return default variant for SSR
-        return ((_b = testConfigurations[testId]) === null || _b === void 0 ? void 0 : _b.variants[0]) || 'default';
+        return testConfigurations[testId]?.variants[0] || 'default';
     }
     // Check if user already has a variant assigned
-    var storedVariant = localStorage.getItem("ab_test_".concat(testId));
+    const storedVariant = localStorage.getItem(`ab_test_${testId}`);
     if (storedVariant) {
         return storedVariant;
     }
     // Get test configuration
-    var testConfig = testConfigurations[testId];
+    const testConfig = testConfigurations[testId];
     if (!testConfig) {
-        console.error("A/B test configuration not found for test ID: ".concat(testId));
+        console.error(`A/B test configuration not found for test ID: ${testId}`);
         return 'default';
     }
     // Assign variant based on weights
-    var variants = testConfig.variants, weights = testConfig.weights;
-    var randomValue = Math.random();
-    var cumulativeWeight = 0;
-    for (var i = 0; i < variants.length; i++) {
+    const { variants, weights } = testConfig;
+    const randomValue = Math.random();
+    let cumulativeWeight = 0;
+    for (let i = 0; i < variants.length; i++) {
         cumulativeWeight += weights[i];
         if (randomValue <= cumulativeWeight) {
             // Store the assigned variant
-            localStorage.setItem("ab_test_".concat(testId), variants[i]);
+            localStorage.setItem(`ab_test_${testId}`, variants[i]);
             return variants[i];
         }
     }
     // Fallback to first variant
-    localStorage.setItem("ab_test_".concat(testId), variants[0]);
+    localStorage.setItem(`ab_test_${testId}`, variants[0]);
     return variants[0];
 };
 exports.getTestVariant = getTestVariant;
@@ -101,12 +100,12 @@ exports.getTestVariant = getTestVariant;
  * @param variantContents - Object containing content for each variant
  * @returns The content for the assigned variant
  */
-var getTestContent = function (testId, variantContents) {
+const getTestContent = (testId, variantContents) => {
     // If A/B testing is disabled, return default content
     if (!isABTestingEnabled) {
         return variantContents['default'] || Object.values(variantContents)[0];
     }
-    var variant = (0, exports.getTestVariant)(testId);
+    const variant = (0, exports.getTestVariant)(testId);
     // Track impression
     trackTestImpression(testId, variant);
     return variantContents[variant] || variantContents['default'];
@@ -117,7 +116,7 @@ exports.getTestContent = getTestContent;
  * @param testId - The ID of the test
  * @param variant - The variant shown to the user
  */
-var trackTestImpression = function (testId, variant) {
+const trackTestImpression = (testId, variant) => {
     // If A/B testing is disabled, don't track impressions
     if (!isABTestingEnabled || typeof window === 'undefined')
         return;
@@ -130,16 +129,15 @@ var trackTestImpression = function (testId, variant) {
  * @param testId The ID of the A/B test
  * @param conversionType The type of conversion (e.g., 'click', 'signup', 'purchase')
  */
-function trackTestConversion(testId, conversionType) {
-    if (conversionType === void 0) { conversionType = 'default'; }
+function trackTestConversion(testId, conversionType = 'default') {
     // If A/B testing is disabled, don't track conversions
     if (!isABTestingEnabled || typeof window === 'undefined')
         return;
     // Check if test exists in either configuration
     if (!testConfigurations[testId] && !exports.abTests[testId]) {
-        console.error("A/B test with ID \"".concat(testId, "\" not found"));
+        console.error(`A/B test with ID "${testId}" not found`);
         return;
     }
-    var variant = (0, exports.getTestVariant)(testId);
+    const variant = (0, exports.getTestVariant)(testId);
     (0, analytics_1.trackABTestConversion)(testId, variant);
 }

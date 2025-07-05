@@ -32,12 +32,14 @@ export async function GET(request: NextRequest) {
     
     // Return progress information
     return NextResponse.json({
+      stage: (job as any).stage,
       jobId,
       status: job.status,
       progress,
       sourceFormat: job.sourceFormat,
       targetFormat: job.targetFormat,
       estimatedTimeRemaining: calculateEstimatedTime(progress, job.sourceSize),
+      stage: (job as any).stage,
     });
   } catch (error) {
     console.error('Get progress error:', error);

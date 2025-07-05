@@ -13,6 +13,10 @@ interface FileConverterProps {
   maxFileSize?: number; // in bytes
 }
 
+interface UploadedFileWithId extends UploadedFile {
+  id: string;
+}
+
 interface UploadedFile {
   id: string;
   name: string;
@@ -28,6 +32,7 @@ interface ConversionJob {
   targetFormat: string;
   status: 'pending' | 'processing' | 'completed' | 'failed';
   progress: number;
+  stage?: 'uploading' | 'validating' | 'converting' | 'retrying';
   result?: {
     downloadUrl: string;
     fileName: string;
@@ -45,12 +50,14 @@ interface FormatOption {
 }
 
 const FileConverter: React.FC<FileConverterProps> = ({ maxFileSize = 50 * 1024 * 1024 }) => {
-  const [uploadedFile, setUploadedFile] = useState<UploadedFile | null>(null);
+  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+  const [conversionJobs, setConversionJobs] = useState<ConversionJob[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [targetFormats, setTargetFormats] = useState<FormatOption[]>([]);
   const [selectedFormat, setSelectedFormat] = useState<string>('');
   const [conversionJob, setConversionJob] = useState<ConversionJob | null>(null);
+  const [conversionStage, setConversionStage] = useState<'uploading' | 'validating' | 'converting' | 'retrying' | null>(null);
   const [isConverting, setIsConverting] = useState(false);
   const [conversionError, setConversionError] = useState<string | null>(null);
   const [socket, setSocket] = useState<Socket | null>(null);
@@ -88,7 +95,7 @@ const FileConverter: React.FC<FileConverterProps> = ({ maxFileSize = 50 * 1024 *
       
       socketIo.on('progress', (data) => {
         if (data.jobId === conversionJob.jobId) {
-          setConversionJob(prev => prev ? { ...prev, progress: data.progress } : null);
+          setConversionJob(prev => prev ? { ...prev, progress: data.progress, stage: data.stage || prev.stage } : null);
         }
       });
       
@@ -182,7 +189,7 @@ const FileConverter: React.FC<FileConverterProps> = ({ maxFileSize = 50 * 1024 *
           const response = await fetch(`/api/progress?jobId=${conversionJob.jobId}`);
           if (response.ok) {
             const data = await response.json();
-            setConversionJob(prev => prev ? { ...prev, progress: data.progress } : null);
+            setConversionJob(prev => prev ? { ...prev, progress: data.progress, stage: data.stage || prev.stage } : null);
             
             if (data.status === 'completed') {
               setConversionJob(prev => prev ? { 
@@ -216,59 +223,17 @@ const FileConverter: React.FC<FileConverterProps> = ({ maxFileSize = 50 * 1024 *
   }, [conversionJob]);
 
   // Handle file drop
-  const onDrop = useCallback(async (acceptedFiles: File[]) => {
-    if (acceptedFiles.length === 0) return;
-    
-    const file = acceptedFiles[0];
-    
-    // Check file size
-    if (file.size > maxFileSize) {
-      setUploadError(`File size exceeds the ${formatFileSize(maxFileSize)} limit`);
-      return;
-    }
-    
-    setIsUploading(true);
+  const onDrop = useCallback((acceptedFiles: File[]) => {
     setUploadError(null);
-    
-    try {
-      // Create form data
-      const formData = new FormData();
-      formData.append('file', file);
-      
-      // Upload file
-      const uploadResponse = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData,
-      });
-      
-      if (!uploadResponse.ok) {
-        const errorData = await uploadResponse.json();
-        throw new Error(errorData.error || 'Failed to upload file');
+    const validFiles = acceptedFiles.filter(file => {
+      if (file.size > maxFileSize) {
+        setUploadError(`File ${file.name} is too large. Max size is ${formatFileSize(maxFileSize)}.`);
+        return false;
       }
-      
-      const uploadData = await uploadResponse.json();
-      
-      setUploadedFile({
-        id: uploadData.fileId,
-        name: file.name,
-        size: file.size,
-        type: file.type,
-        uploadedAt: new Date(),
-        url: uploadData.url,
-      });
-      
-      // Get compatible target formats
-      const formatsResponse = await fetch(`/api/formats?sourceFormat=${uploadData.extension}`);
-      
-      if (!formatsResponse.ok) {
-        const errorData = await formatsResponse.json();
-        throw new Error(errorData.error || 'Failed to get compatible formats');
-      }
-      
-      const formatsData = await formatsResponse.json();
-      setTargetFormats(formatsData.formats);
-      
-      if (formatsData.formats.length > 0) {
+      return true;
+    });
+    setUploadedFiles(prev => [...prev, ...validFiles]);
+  }, [maxFileSize]);
         setSelectedFormat(formatsData.formats[0].id);
       }
     } catch (error) {
@@ -294,13 +259,13 @@ const FileConverter: React.FC<FileConverterProps> = ({ maxFileSize = 50 * 1024 *
       'audio/*': [],
       'video/*': [],
     },
-    maxFiles: 1,
+    multiple: true,
     disabled: isUploading || !!conversionJob,
   });
 
   // Start conversion
   const startConversion = async () => {
-    if (!uploadedFile || !selectedFormat) return;
+    if (uploadedFiles.length === 0 || !selectedFormat) return;
     
     setIsConverting(true);
     setConversionError(null);
@@ -405,7 +370,7 @@ const FileConverter: React.FC<FileConverterProps> = ({ maxFileSize = 50 * 1024 *
         </div>
       )}
       
-      {!uploadedFile && (
+      {uploadedFiles.length === 0 && (
         <div 
           {...getRootProps()} 
           className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${isDragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-300 hover:border-blue-400'}`}
@@ -441,7 +406,28 @@ const FileConverter: React.FC<FileConverterProps> = ({ maxFileSize = 50 * 1024 *
         </div>
       )}
       
-      {uploadedFile && !conversionJob && (
+      {uploadedFiles.length > 0 && !conversionJob && (
+        <div className="mt-6">
+          <div className="p-4 bg-gray-100 rounded-lg mb-4">
+            <h3 className="font-semibold mb-2">Uploaded Files</h3>
+            <ul className="space-y-2">
+              {uploadedFiles.map(file => (
+                <li key={file.id} className="flex items-center justify-between p-2 bg-gray-100 dark:bg-gray-800 rounded-md">
+                  <div className="flex items-center space-x-2">
+                    <FaCheck className="text-green-500" />
+                    <span className="text-sm font-medium">{file.name}</span>
+                    <span className="text-xs text-gray-500">({formatFileSize(file.size)})</span>
+                  </div>
+                  <button 
+                    onClick={() => setUploadedFiles(files => files.filter(f => f.id !== file.id))}
+                    className="text-red-500 hover:text-red-700"
+                  >
+                    &times;
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
         <div className="mt-6">
           <div className="p-4 bg-gray-100 rounded-lg mb-4">
             <h3 className="font-semibold mb-2">Selected File</h3>
@@ -554,21 +540,18 @@ const FileConverter: React.FC<FileConverterProps> = ({ maxFileSize = 50 * 1024 *
             
             {conversionJob.status === 'processing' && (
               <div className="mt-4">
-                <div className="relative pt-1">
-                  <div className="flex mb-2 items-center justify-between">
-                    <div>
-                      <span className="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-blue-600 bg-blue-200">
-                        {Math.round(conversionJob.progress)}%
-                      </span>
-                    </div>
-                  </div>
-                  <div className="overflow-hidden h-2 mb-4 text-xs flex rounded bg-blue-200">
-                    <motion.div 
-                      initial={{ width: '0%' }}
-                      animate={{ width: `${conversionJob.progress}%` }}
-                      transition={{ duration: 0.5 }}
-                      className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-blue-500"
-                    />
+                <div className="w-full bg-gray-200 rounded-full h-4 dark:bg-gray-700 relative overflow-hidden">
+                  <div 
+                    className="bg-blue-600 h-4 rounded-full transition-all duration-500 ease-out"
+                    style={{ width: `${conversionJob.progress}%` }}
+                  ></div>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <p className="text-xs font-semibold text-white mix-blend-difference">
+                      {conversionJob.stage === 'validating' && 'Validating file...'}
+                      {conversionJob.stage === 'converting' && `Converting... ${conversionJob.progress}%`}
+                      {conversionJob.stage === 'retrying' && `Retrying...`}
+                      {!conversionJob.stage && `Processing... ${conversionJob.progress}%`}
+                    </p>
                   </div>
                 </div>
               </div>

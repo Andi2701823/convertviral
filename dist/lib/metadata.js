@@ -16,12 +16,11 @@ exports.siteConfig = {
     publisher: 'ConvertViral',
 };
 // Function to generate metadata for a page
-function generateMetadata(_a) {
-    var title = _a.title, description = _a.description, _b = _a.path, path = _b === void 0 ? '' : _b, _c = _a.noIndex, noIndex = _c === void 0 ? false : _c;
-    var url = "".concat(exports.siteConfig.url).concat(path);
+function generateMetadata({ title, description, path = '', noIndex = false, }) {
+    const url = `${exports.siteConfig.url}${path}`;
     return {
-        title: title,
-        description: description,
+        title,
+        description,
         keywords: 'file conversion, convert pdf, convert image, convert video, convert audio',
         authors: exports.siteConfig.authors,
         creator: exports.siteConfig.creator,
@@ -32,9 +31,9 @@ function generateMetadata(_a) {
         },
         robots: noIndex ? 'noindex, nofollow' : 'index, follow',
         openGraph: {
-            title: title,
-            description: description,
-            url: url,
+            title,
+            description,
+            url,
             siteName: exports.siteConfig.name,
             images: [
                 {
@@ -49,27 +48,25 @@ function generateMetadata(_a) {
         },
         twitter: {
             card: 'summary_large_image',
-            title: title,
-            description: description,
+            title,
+            description,
             images: [exports.siteConfig.twitterImage],
         },
     };
 }
 // Function to generate metadata for a conversion page
-function generateConversionMetadata(_a) {
-    var sourceFormat = _a.sourceFormat, targetFormat = _a.targetFormat;
-    var title = "Convert ".concat(sourceFormat.toUpperCase(), " to ").concat(targetFormat.toUpperCase(), " - ConvertViral");
-    var description = "Convert your ".concat(sourceFormat.toUpperCase(), " files to ").concat(targetFormat.toUpperCase(), " format online for free. Fast, easy, and secure file conversion.");
-    var path = "/convert/".concat(sourceFormat, "-to-").concat(targetFormat);
-    return generateMetadata({ title: title, description: description, path: path });
+function generateConversionMetadata({ sourceFormat, targetFormat, }) {
+    const title = `Convert ${sourceFormat.toUpperCase()} to ${targetFormat.toUpperCase()} - ConvertViral`;
+    const description = `Convert your ${sourceFormat.toUpperCase()} files to ${targetFormat.toUpperCase()} format online for free. Fast, easy, and secure file conversion.`;
+    const path = `/convert/${sourceFormat}-to-${targetFormat}`;
+    return generateMetadata({ title, description, path });
 }
 // Function to generate structured data for a conversion page
-function generateConversionStructuredData(_a) {
-    var sourceFormat = _a.sourceFormat, targetFormat = _a.targetFormat;
+function generateConversionStructuredData({ sourceFormat, targetFormat, }) {
     return {
         '@context': 'https://schema.org',
         '@type': 'SoftwareApplication',
-        name: "".concat(sourceFormat.toUpperCase(), " to ").concat(targetFormat.toUpperCase(), " Converter"),
+        name: `${sourceFormat.toUpperCase()} to ${targetFormat.toUpperCase()} Converter`,
         applicationCategory: 'WebApplication',
         operatingSystem: 'Any',
         offers: {

@@ -5,6 +5,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { exec } from 'child_process';
 import * as util from 'util';
+import ConversionService from './conversionService';
 
 // Convert exec to Promise-based
 const execPromise = util.promisify(exec);
@@ -56,92 +57,8 @@ export async function convertFile(
   job: ConversionJob,
   options: ConversionOptions = {}
 ): Promise<ConversionResult> {
-  try {
-    // Update job status to PROCESSING
-    job.status = 'PROCESSING';
-    await setCache(`conversion:${job.jobId}`, job, 60 * 60 * 24); // 24 hours TTL
-    
-    // Set initial progress
-    await setCache(`progress:${job.jobId}`, 0, 60 * 60 * 24);
-    
-    // Ensure output directory exists
-    const outputDir = path.join(process.cwd(), 'uploads', 'output');
-    if (!fs.existsSync(outputDir)) {
-      fs.mkdirSync(outputDir, { recursive: true });
-    }
-    
-    // Generate output filename
-    const sourceExt = path.extname(job.sourceFile);
-    const baseName = path.basename(job.sourceFile, sourceExt);
-    const targetExt = `.${job.targetFormat.toLowerCase()}`;
-    const outputFile = path.join(outputDir, `${baseName}_${Date.now()}${targetExt}`);
-    
-    // Perform the conversion based on source and target formats
-    await performConversion(
-      job.sourceFile,
-      outputFile,
-      job.sourceFormat,
-      job.targetFormat,
-      options,
-      job.jobId
-    );
-    
-    // Check if output file exists
-    if (!fs.existsSync(outputFile)) {
-      throw new Error('Conversion failed: Output file not created');
-    }
-    
-    // Get output file size
-    const stats = fs.statSync(outputFile);
-    
-    // Set final progress
-    await setCache(`progress:${job.jobId}`, 100, 60 * 60 * 24);
-    
-    // Calculate points earned
-    const pointsEarned = calculateConversionPoints(job.sourceSize, job.targetFormat);
-    
-    // Check for badges earned
-    const badgesEarned = await checkForBadgeEarning(job.userId, job.sourceFormat, job.targetFormat);
-    
-    // Create result object
-    const result: ConversionResult = {
-      jobId: job.jobId,
-      status: 'COMPLETED',
-      resultUrl: `/api/download?file=${path.basename(outputFile)}`,
-      resultSize: stats.size,
-      completedAt: Date.now(),
-      pointsEarned,
-      badgesEarned,
-    };
-    
-    // Update job status to COMPLETED
-    job.status = 'COMPLETED';
-    await setCache(`conversion:${job.jobId}`, job, 60 * 60 * 24);
-    
-    // Store result in Redis
-    await setCache(`result:${job.jobId}`, result, 60 * 60 * 24);
-    
-    return result;
-  } catch (error) {
-    console.error('Conversion error:', error);
-    
-    // Update job status to FAILED
-    job.status = 'FAILED';
-    await setCache(`conversion:${job.jobId}`, job, 60 * 60 * 24);
-    
-    // Create error result
-    const result: ConversionResult = {
-      jobId: job.jobId,
-      status: 'FAILED',
-      error: error instanceof Error ? error.message : 'Unknown error',
-      completedAt: Date.now(),
-    };
-    
-    // Store result in Redis
-    await setCache(`result:${job.jobId}`, result, 60 * 60 * 24);
-    
-    return result;
-  }
+  const conversionService = new ConversionService(job, options);
+  return conversionService.run();
 }
 
 /**

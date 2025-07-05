@@ -4,12 +4,12 @@ import { fileFormats } from './fileTypes';
 // Site configuration
 export const siteConfig = {
   name: process.env.NEXT_PUBLIC_SITE_NAME || 'ConvertViral',
-  url: process.env.NEXT_PUBLIC_SITE_URL || 'https://convertviral.com',
+  url: process.env.NEXT_PUBLIC_SITE_URL || 'https://convertviral.netlify.app',
   description: 'Free online file converter. Convert documents, images, audio, and video files with ease.',
   defaultLocale: process.env.NEXT_PUBLIC_DEFAULT_LOCALE || 'en',
   supportedLocales: (process.env.NEXT_PUBLIC_SUPPORTED_LOCALES || 'en,es,fr,de,it,pt,ja,zh').split(','),
   twitterHandle: '@convertviral',
-  logoUrl: 'https://convertviral.com/logo.png',
+  logoUrl: 'https://convertviral.netlify.app/logo.png',
   ogImage: '/og-image.jpg',
   twitterImage: '/twitter-image.jpg',
   authors: [{ name: 'ConvertViral Team' }],

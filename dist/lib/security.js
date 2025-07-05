@@ -32,48 +32,15 @@ var __importStar = (this && this.__importStar) || (function () {
         return result;
     };
 })();
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __generator = (this && this.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype);
-    return g.next = verb(0), g["throw"] = verb(1), g["return"] = verb(2), typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
-    function verb(n) { return function (v) { return step([n, v]); }; }
-    function step(op) {
-        if (f) throw new TypeError("Generator is already executing.");
-        while (g && (g = 0, op[0] && (_ = 0)), _) try {
-            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [op[0] & 2, t.value];
-            switch (op[0]) {
-                case 0: case 1: t = op; break;
-                case 4: _.label++; return { value: op[1], done: false };
-                case 5: _.label++; y = op[1]; op = [0]; continue;
-                case 7: op = _.ops.pop(); _.trys.pop(); continue;
-                default:
-                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
-                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
-                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
-                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
-                    if (t[2]) _.ops.pop();
-                    _.trys.pop(); continue;
-            }
-            op = body.call(thisArg, _);
-        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
-        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
-    }
-};
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.RateLimiter = exports.XSSProtection = exports.CSRFProtection = exports.SecurityError = exports.SecurityErrorType = exports.securityLogger = void 0;
 exports.calculateFileHash = calculateFileHash;
 exports.isKnownCleanFile = isKnownCleanFile;
 exports.markFileAsClean = markFileAsClean;
-exports.scanFileForViruses = scanFileForViruses;
+exports.scanForViruses = scanForViruses;
 exports.checkRateLimits = checkRateLimits;
+exports.validateMagicNumber = validateMagicNumber;
+exports.validateFile = validateFile;
 exports.validateFileExtension = validateFileExtension;
 exports.sanitizeFilename = sanitizeFilename;
 exports.apiRateLimit = apiRateLimit;
@@ -85,206 +52,477 @@ exports.hashPassword = hashPassword;
 exports.verifyPassword = verifyPassword;
 exports.combineMiddleware = combineMiddleware;
 exports.createSecureApiRoute = createSecureApiRoute;
-var crypto = __importStar(require("crypto"));
-var fs = __importStar(require("fs"));
-var util_1 = require("util");
-var redis_1 = require("./redis");
-var zod_1 = require("zod");
-var monitoring_1 = require("./monitoring");
-var readFile = (0, util_1.promisify)(fs.readFile);
+const crypto = __importStar(require("crypto"));
+const fs = __importStar(require("fs"));
+const util_1 = require("util");
+const redis_1 = require("./redis");
+const zod_1 = require("zod");
+const monitoring_1 = require("./monitoring");
+const winston_1 = require("winston");
+/**
+ * Security logger for tracking security events
+ */
+exports.securityLogger = (0, winston_1.createLogger)({
+    level: 'info',
+    format: winston_1.format.combine(winston_1.format.timestamp(), winston_1.format.json(), winston_1.format.metadata()),
+    defaultMeta: { service: 'security-service' },
+    transports: [
+        // Console transport for development
+        new winston_1.transports.Console({
+            format: winston_1.format.combine(winston_1.format.colorize(), winston_1.format.printf(({ timestamp, level, message, metadata }) => {
+                return `${timestamp} [SECURITY] ${level}: ${message} ${JSON.stringify(metadata)}`;
+            })),
+        }),
+        // File transport for production
+        new winston_1.transports.File({
+            filename: 'logs/security.log',
+            maxsize: 5242880, // 5MB
+            maxFiles: 5,
+        }),
+    ],
+});
+/**
+ * Error types for security operations
+ */
+var SecurityErrorType;
+(function (SecurityErrorType) {
+    SecurityErrorType["RATE_LIMIT_EXCEEDED"] = "RATE_LIMIT_EXCEEDED";
+    SecurityErrorType["VALIDATION_FAILED"] = "VALIDATION_FAILED";
+    SecurityErrorType["AUTHENTICATION_FAILED"] = "AUTHENTICATION_FAILED";
+    SecurityErrorType["VIRUS_DETECTED"] = "VIRUS_DETECTED";
+    SecurityErrorType["FILE_TYPE_MISMATCH"] = "FILE_TYPE_MISMATCH";
+    SecurityErrorType["UNAUTHORIZED_ACCESS"] = "UNAUTHORIZED_ACCESS";
+    SecurityErrorType["CSRF_TOKEN_INVALID"] = "CSRF_TOKEN_INVALID";
+    SecurityErrorType["XSS_ATTEMPT"] = "XSS_ATTEMPT";
+    SecurityErrorType["INTERNAL_ERROR"] = "INTERNAL_ERROR";
+})(SecurityErrorType || (exports.SecurityErrorType = SecurityErrorType = {}));
+/**
+ * Security error class for standardized error handling
+ */
+class SecurityError extends Error {
+    constructor(type, message, details = {}) {
+        super(message);
+        this.name = 'SecurityError';
+        this.type = type;
+        this.details = details;
+        this.timestamp = Date.now();
+        // Log the security error
+        this.logError();
+    }
+    /**
+     * Log the security error
+     */
+    logError() {
+        exports.securityLogger.warn(this.message, {
+            errorType: this.type,
+            details: this.details,
+            timestamp: this.timestamp,
+            userId: this.userId,
+            ip: this.ip,
+            stack: this.stack,
+        });
+    }
+    /**
+     * Add user context to the error
+     */
+    withUser(userId, ip) {
+        this.userId = userId;
+        this.ip = ip;
+        return this;
+    }
+}
+exports.SecurityError = SecurityError;
+const readFile = (0, util_1.promisify)(fs.readFile);
+/**
+ * Magic number signatures for file type validation
+ */
+const FILE_SIGNATURES = {
+    'application/pdf': [{ signature: [0x25, 0x50, 0x44, 0x46], offset: 0 }], // %PDF
+    'image/jpeg': [
+        { signature: [0xFF, 0xD8, 0xFF], offset: 0 },
+        { signature: [0xFF, 0xD8, 0xFF, 0xE0], offset: 0 },
+        { signature: [0xFF, 0xD8, 0xFF, 0xE1], offset: 0 }
+    ],
+    'image/png': [{ signature: [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A], offset: 0 }],
+    'image/gif': [
+        { signature: [0x47, 0x49, 0x46, 0x38, 0x37, 0x61], offset: 0 }, // GIF87a
+        { signature: [0x47, 0x49, 0x46, 0x38, 0x39, 0x61], offset: 0 } // GIF89a
+    ],
+    'application/zip': [{ signature: [0x50, 0x4B, 0x03, 0x04], offset: 0 }],
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document': [
+        { signature: [0x50, 0x4B, 0x03, 0x04], offset: 0 } // DOCX is ZIP-based
+    ],
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': [
+        { signature: [0x50, 0x4B, 0x03, 0x04], offset: 0 } // XLSX is ZIP-based
+    ],
+    'application/vnd.openxmlformats-officedocument.presentationml.presentation': [
+        { signature: [0x50, 0x4B, 0x03, 0x04], offset: 0 } // PPTX is ZIP-based
+    ],
+    'application/msword': [{ signature: [0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1], offset: 0 }],
+    'video/mp4': [
+        { signature: [0x66, 0x74, 0x79, 0x70], offset: 4 }, // ftyp
+        { signature: [0x00, 0x00, 0x00, 0x18, 0x66, 0x74, 0x79, 0x70], offset: 0 }
+    ],
+    'audio/mpeg': [{ signature: [0xFF, 0xFB], offset: 0 }, { signature: [0x49, 0x44, 0x33], offset: 0 }] // MP3
+};
 /**
  * Calculate file hash (SHA-256)
  * @param filePath Path to the file
  * @returns Promise with the file hash
  */
-function calculateFileHash(filePath) {
-    return __awaiter(this, void 0, void 0, function () {
-        var fileBuffer, hashSum, error_1;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    _a.trys.push([0, 2, , 3]);
-                    return [4 /*yield*/, readFile(filePath)];
-                case 1:
-                    fileBuffer = _a.sent();
-                    hashSum = crypto.createHash('sha256');
-                    hashSum.update(fileBuffer);
-                    return [2 /*return*/, hashSum.digest('hex')];
-                case 2:
-                    error_1 = _a.sent();
-                    console.error('Error calculating file hash:', error_1);
-                    throw new Error('Failed to calculate file hash');
-                case 3: return [2 /*return*/];
-            }
-        });
-    });
+async function calculateFileHash(filePath) {
+    try {
+        const fileBuffer = await readFile(filePath);
+        const hashSum = crypto.createHash('sha256');
+        hashSum.update(fileBuffer);
+        return hashSum.digest('hex');
+    }
+    catch (error) {
+        console.error('Error calculating file hash:', error);
+        throw new Error('Failed to calculate file hash');
+    }
 }
 /**
  * Check if a file has been previously scanned and is clean
  * @param fileHash SHA-256 hash of the file
  * @returns Promise<boolean> true if file is known to be clean
  */
-function isKnownCleanFile(fileHash) {
-    return __awaiter(this, void 0, void 0, function () {
-        var redis, result, error_2;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    _a.trys.push([0, 3, , 4]);
-                    return [4 /*yield*/, (0, redis_1.getRedisClient)()];
-                case 1:
-                    redis = _a.sent();
-                    return [4 /*yield*/, redis.get("virus:clean:".concat(fileHash))];
-                case 2:
-                    result = _a.sent();
-                    return [2 /*return*/, result === 'clean'];
-                case 3:
-                    error_2 = _a.sent();
-                    console.error('Error checking known clean file:', error_2);
-                    return [2 /*return*/, false];
-                case 4: return [2 /*return*/];
-            }
-        });
-    });
+async function isKnownCleanFile(fileHash) {
+    try {
+        const redis = await (0, redis_1.getRedisClient)();
+        const result = await redis.get(`virus:clean:${fileHash}`);
+        return result === 'clean';
+    }
+    catch (error) {
+        console.error('Error checking known clean file:', error);
+        return false;
+    }
 }
 /**
  * Mark a file as clean in the cache
  * @param fileHash SHA-256 hash of the file
  * @param ttlInSeconds Time to live in seconds (default: 7 days)
  */
-function markFileAsClean(fileHash_1) {
-    return __awaiter(this, arguments, void 0, function (fileHash, ttlInSeconds) {
-        var redis, error_3;
-        if (ttlInSeconds === void 0) { ttlInSeconds = 7 * 24 * 60 * 60; }
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    _a.trys.push([0, 3, , 4]);
-                    return [4 /*yield*/, (0, redis_1.getRedisClient)()];
-                case 1:
-                    redis = _a.sent();
-                    return [4 /*yield*/, redis.set("virus:clean:".concat(fileHash), 'clean', { EX: ttlInSeconds })];
-                case 2:
-                    _a.sent();
-                    return [3 /*break*/, 4];
-                case 3:
-                    error_3 = _a.sent();
-                    console.error('Error marking file as clean:', error_3);
-                    return [3 /*break*/, 4];
-                case 4: return [2 /*return*/];
-            }
-        });
-    });
+async function markFileAsClean(fileHash, ttlInSeconds = 7 * 24 * 60 * 60) {
+    try {
+        const redis = await (0, redis_1.getRedisClient)();
+        await redis.set(`virus:clean:${fileHash}`, 'clean', { EX: ttlInSeconds });
+    }
+    catch (error) {
+        console.error('Error marking file as clean:', error);
+    }
 }
 /**
- * Scan file for viruses (mock implementation)
- * In a real implementation, this would integrate with a virus scanning service
+ * CSRF token generation and validation
+ */
+class CSRFProtection {
+    /**
+     * Generate a CSRF token
+     */
+    static generateToken() {
+        const crypto = require('crypto');
+        return crypto.randomBytes(this.TOKEN_LENGTH).toString('hex');
+    }
+    /**
+     * Validate CSRF token
+     */
+    static validateToken(token, sessionToken) {
+        if (!token || !sessionToken) {
+            return false;
+        }
+        // Use constant-time comparison to prevent timing attacks
+        const crypto = require('crypto');
+        return crypto.timingSafeEqual(Buffer.from(token, 'hex'), Buffer.from(sessionToken, 'hex'));
+    }
+}
+exports.CSRFProtection = CSRFProtection;
+CSRFProtection.TOKEN_LENGTH = 32;
+CSRFProtection.TOKEN_EXPIRY = 60 * 60 * 1000; // 1 hour
+/**
+ * XSS prevention utilities
+ */
+class XSSProtection {
+    /**
+     * Sanitize HTML content
+     */
+    static sanitizeHTML(input) {
+        if (!input)
+            return '';
+        return input
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#x27;')
+            .replace(/\//g, '&#x2F;');
+    }
+    /**
+     * Validate and sanitize user input
+     */
+    static sanitizeInput(input, maxLength = 1000) {
+        if (!input)
+            return '';
+        // Trim and limit length
+        let sanitized = input.trim().substring(0, maxLength);
+        // Remove potentially dangerous characters
+        sanitized = sanitized.replace(/[<>"'&]/g, '');
+        // Remove script tags and javascript: protocols
+        sanitized = sanitized.replace(/<script[^>]*>.*?<\/script>/gi, '');
+        sanitized = sanitized.replace(/javascript:/gi, '');
+        sanitized = sanitized.replace(/on\w+\s*=/gi, '');
+        return sanitized;
+    }
+    /**
+     * Validate file name for security
+     */
+    static sanitizeFileName(fileName) {
+        if (!fileName)
+            return 'untitled';
+        // Remove path traversal attempts
+        let sanitized = fileName.replace(/\.\./g, '');
+        // Remove dangerous characters
+        sanitized = sanitized.replace(/[<>:"|?*\\\//]/g, '_');
+        // Limit length
+        sanitized = sanitized.substring(0, 255);
+        // Ensure it's not empty
+        return sanitized || 'untitled';
+    }
+}
+exports.XSSProtection = XSSProtection;
+/**
+ * Virus scanning service
  * @param filePath Path to the file
- * @returns Promise with scan result
+ * @returns Virus scan result
  */
-function scanFileForViruses(filePath) {
-    return __awaiter(this, void 0, void 0, function () {
-        var fileHash, isKnownClean, startTime, fileStats, fileSizeInMB, delay_1, isClean, scanTime, error_4;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    _a.trys.push([0, 6, , 7]);
-                    return [4 /*yield*/, calculateFileHash(filePath)];
-                case 1:
-                    fileHash = _a.sent();
-                    return [4 /*yield*/, isKnownCleanFile(fileHash)];
-                case 2:
-                    isKnownClean = _a.sent();
-                    if (isKnownClean) {
-                        return [2 /*return*/, {
-                                isClean: true,
-                                scanTime: 0,
-                            }];
-                    }
-                    startTime = Date.now();
-                    fileStats = fs.statSync(filePath);
-                    fileSizeInMB = fileStats.size / (1024 * 1024);
-                    delay_1 = Math.max(500, fileSizeInMB * 100);
-                    return [4 /*yield*/, new Promise(function (resolve) { return setTimeout(resolve, delay_1); })];
-                case 3:
-                    _a.sent();
-                    isClean = true;
-                    if (!isClean) return [3 /*break*/, 5];
-                    return [4 /*yield*/, markFileAsClean(fileHash)];
-                case 4:
-                    _a.sent();
-                    _a.label = 5;
-                case 5:
-                    scanTime = Date.now() - startTime;
-                    return [2 /*return*/, {
-                            isClean: isClean,
-                            scanTime: scanTime,
-                        }];
-                case 6:
-                    error_4 = _a.sent();
-                    console.error('Error scanning file for viruses:', error_4);
-                    throw new Error('Failed to scan file for viruses');
-                case 7: return [2 /*return*/];
+async function scanForViruses(filePath) {
+    const startTime = Date.now();
+    try {
+        // This is a placeholder for a real virus scanning service
+        // In production, this would be replaced with a call to a real service like ClamAV, VirusTotal API, etc.
+        // Simulate scanning process
+        await new Promise(resolve => setTimeout(resolve, 500)); // Simulate 500ms scan time
+        // Read file for basic checks (in a real implementation, this would be more sophisticated)
+        const fs = require('fs');
+        const fileStats = await fs.promises.stat(filePath);
+        // Log the scan for monitoring
+        console.log(`[SECURITY] Virus scan completed for file: ${filePath} (${fileStats.size} bytes)`);
+        // Random chance of detecting a "virus" for testing (1% chance)
+        // Remove this in production and replace with real scanning
+        const randomDetection = Math.random() < 0.01;
+        if (randomDetection) {
+            return {
+                isClean: false,
+                threatName: 'TEST-MALWARE-DETECTION',
+                scanTime: Date.now() - startTime,
+                scanEngine: 'ConvertViral-SecurityScan-v1'
+            };
+        }
+        return {
+            isClean: true,
+            scanTime: Date.now() - startTime,
+            scanEngine: 'ConvertViral-SecurityScan-v1'
+        };
+    }
+    catch (error) {
+        console.error(`[SECURITY] Virus scan failed for file: ${filePath}`, error);
+        // In case of error, treat as potentially unsafe
+        return {
+            isClean: false,
+            threatName: 'SCAN-ERROR',
+            scanTime: Date.now() - startTime,
+            scanEngine: 'ConvertViral-SecurityScan-v1'
+        };
+    }
+}
+/**
+ * Enhanced rate limiting with plan-based limits
+ */
+class RateLimiter {
+    /**
+     * Check if user is within rate limits
+     */
+    static async checkRateLimit(userId, action, userPlan, amount = 1) {
+        try {
+            const redis = await (0, redis_1.getRedisClient)();
+            const config = this.RATE_LIMITS[userPlan][action];
+            if (!config) {
+                return { allowed: false, remaining: 0, resetTime: 0, error: `Unknown action: ${action}` };
             }
-        });
+            const now = Date.now();
+            const windowStart = now - config.windowMs;
+            const key = `ratelimit:${userPlan}:${userId}:${action}`;
+            const burstKey = `ratelimit:burst:${userPlan}:${userId}:${action}`;
+            // Clean up old entries
+            await redis.zRemRangeByScore(key, 0, windowStart);
+            // Get current usage
+            const currentUsage = await redis.zCard(key);
+            const totalUsed = await redis.zRangeWithScores(key, 0, -1);
+            const usedAmount = totalUsed.reduce((sum, item) => sum + item.score, 0);
+            // Check burst limit if configured
+            if (config.burstLimit) {
+                const burstWindowStart = now - (5 * 60 * 1000); // 5-minute burst window
+                await redis.zRemRangeByScore(burstKey, 0, burstWindowStart);
+                const burstUsage = await redis.zCard(burstKey);
+                if (burstUsage + amount > config.burstLimit) {
+                    return {
+                        allowed: false,
+                        remaining: Math.max(0, config.burstLimit - burstUsage),
+                        resetTime: now + (5 * 60 * 1000),
+                        error: 'Burst limit exceeded'
+                    };
+                }
+            }
+            // Check main rate limit
+            if (usedAmount + amount > config.requests) {
+                return {
+                    allowed: false,
+                    remaining: Math.max(0, config.requests - usedAmount),
+                    resetTime: now + config.windowMs,
+                    error: 'Rate limit exceeded'
+                };
+            }
+            // Record the usage
+            const pipeline = redis.multi();
+            pipeline.zAdd(key, { score: amount, value: `${now}:${amount}` });
+            pipeline.expire(key, Math.ceil(config.windowMs / 1000));
+            if (config.burstLimit) {
+                pipeline.zAdd(burstKey, { score: amount, value: `${now}:${amount}` });
+                pipeline.expire(burstKey, 5 * 60); // 5 minutes
+            }
+            await pipeline.exec();
+            return {
+                allowed: true,
+                remaining: Math.max(0, config.requests - usedAmount - amount),
+                resetTime: now + config.windowMs
+            };
+        }
+        catch (error) {
+            console.error(`[SECURITY] Rate limit check failed for ${userId}:${action}:`, error);
+            // Fail open for better user experience
+            return { allowed: true, remaining: 0, resetTime: 0, error: 'Rate limit check failed' };
+        }
+    }
+    /**
+     * Get current usage for a user and action
+     */
+    static async getUsage(userId, action, userPlan) {
+        try {
+            const redis = await (0, redis_1.getRedisClient)();
+            const config = this.RATE_LIMITS[userPlan][action];
+            if (!config) {
+                return { used: 0, limit: 0, resetTime: 0 };
+            }
+            const now = Date.now();
+            const windowStart = now - config.windowMs;
+            const key = `ratelimit:${userPlan}:${userId}:${action}`;
+            // Clean up old entries
+            await redis.zRemRangeByScore(key, 0, windowStart);
+            // Get current usage
+            const totalUsed = await redis.zRangeWithScores(key, 0, -1);
+            const usedAmount = totalUsed.reduce((sum, item) => sum + item.score, 0);
+            return {
+                used: usedAmount,
+                limit: config.requests,
+                resetTime: now + config.windowMs
+            };
+        }
+        catch (error) {
+            console.error(`[SECURITY] Usage check failed for ${userId}:${action}:`, error);
+            return { used: 0, limit: 0, resetTime: 0 };
+        }
+    }
+}
+exports.RateLimiter = RateLimiter;
+RateLimiter.RATE_LIMITS = {
+    free: {
+        upload: { requests: 10, windowMs: 60 * 60 * 1000 }, // 10 per hour
+        convert: { requests: 20, windowMs: 60 * 60 * 1000 }, // 20 per hour
+        download: { requests: 30, windowMs: 60 * 60 * 1000 }, // 30 per hour
+        api: { requests: 100, windowMs: 60 * 60 * 1000 }, // 100 per hour
+        'file-size': { requests: 50 * 1024 * 1024, windowMs: 24 * 60 * 60 * 1000 }, // 50MB per day
+    },
+    premium: {
+        upload: { requests: 100, windowMs: 60 * 60 * 1000, burstLimit: 20 }, // 100 per hour, burst 20
+        convert: { requests: 200, windowMs: 60 * 60 * 1000, burstLimit: 50 }, // 200 per hour, burst 50
+        download: { requests: 300, windowMs: 60 * 60 * 1000, burstLimit: 60 }, // 300 per hour, burst 60
+        api: { requests: 1000, windowMs: 60 * 60 * 1000, burstLimit: 200 }, // 1000 per hour, burst 200
+        'file-size': { requests: 500 * 1024 * 1024, windowMs: 24 * 60 * 60 * 1000 }, // 500MB per day
+    },
+    enterprise: {
+        upload: { requests: 1000, windowMs: 60 * 60 * 1000, burstLimit: 200 },
+        convert: { requests: 2000, windowMs: 60 * 60 * 1000, burstLimit: 500 },
+        download: { requests: 3000, windowMs: 60 * 60 * 1000, burstLimit: 600 },
+        api: { requests: 10000, windowMs: 60 * 60 * 1000, burstLimit: 2000 },
+        'file-size': { requests: 5 * 1024 * 1024 * 1024, windowMs: 24 * 60 * 60 * 1000 }, // 5GB per day
+    }
+};
+/**
+ * Legacy function for backward compatibility
+ */
+async function checkRateLimits(userId, action, isPremium) {
+    const userPlan = isPremium ? 'premium' : 'free';
+    const result = await RateLimiter.checkRateLimit(userId, action, userPlan);
+    return result.allowed;
+}
+/**
+ * Validate file magic number against expected MIME type
+ * @param buffer File buffer to check
+ * @param expectedMimeType Expected MIME type
+ * @returns True if magic number matches
+ */
+function validateMagicNumber(buffer, expectedMimeType) {
+    const signatures = FILE_SIGNATURES[expectedMimeType];
+    if (!signatures) {
+        return false; // Unknown MIME type
+    }
+    const bytes = new Uint8Array(buffer);
+    return signatures.some(({ signature, offset }) => {
+        if (bytes.length < offset + signature.length) {
+            return false;
+        }
+        return signature.every((byte, index) => bytes[offset + index] === byte);
     });
 }
 /**
- * Check rate limits for a user
- * @param userId User ID
- * @param action Action type (e.g., 'upload', 'convert')
- * @param isPremium Whether the user is premium
- * @returns Promise<boolean> true if within rate limits
+ * Enhanced file validation with magic number checking
+ * @param file File to validate
+ * @param allowedTypes Allowed MIME types
+ * @param maxSize Maximum file size in bytes
+ * @returns Validation result
  */
-function checkRateLimits(userId, action, isPremium) {
-    return __awaiter(this, void 0, void 0, function () {
-        var redis, now_1, windowSize_1, limits, limit, key, usageWithScores, validUsage, error_5;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    _a.trys.push([0, 5, , 6]);
-                    return [4 /*yield*/, (0, redis_1.getRedisClient)()];
-                case 1:
-                    redis = _a.sent();
-                    now_1 = Date.now();
-                    windowSize_1 = 60 * 60 * 1000;
-                    limits = {
-                        upload: { free: 10, premium: 100 },
-                        convert: { free: 20, premium: 200 },
-                        download: { free: 30, premium: 300 },
-                    };
-                    limit = isPremium ? limits[action].premium : limits[action].free;
-                    key = "ratelimit:".concat(userId, ":").concat(action);
-                    return [4 /*yield*/, redis.zRangeWithScores(key, 0, -1)];
-                case 2:
-                    usageWithScores = _a.sent();
-                    validUsage = usageWithScores.filter(function (item) {
-                        return parseInt(item.score.toString()) > now_1 - windowSize_1;
-                    });
-                    // Check if user is within limits
-                    if (validUsage.length >= limit) {
-                        return [2 /*return*/, false];
-                    }
-                    // Add current timestamp to the sorted set
-                    return [4 /*yield*/, redis.zAdd(key, { score: now_1, value: now_1.toString() })];
-                case 3:
-                    // Add current timestamp to the sorted set
-                    _a.sent();
-                    // Set expiry on the key
-                    return [4 /*yield*/, redis.expire(key, Math.ceil(windowSize_1 / 1000))];
-                case 4:
-                    // Set expiry on the key
-                    _a.sent();
-                    return [2 /*return*/, true];
-                case 5:
-                    error_5 = _a.sent();
-                    console.error('Error checking rate limits:', error_5);
-                    // In case of error, allow the action (fail open for user experience)
-                    return [2 /*return*/, true];
-                case 6: return [2 /*return*/];
-            }
-        });
-    });
+async function validateFile(file, allowedTypes, maxSize) {
+    // Check file size
+    if (file.size > maxSize) {
+        return {
+            isValid: false,
+            error: `File size exceeds maximum allowed size of ${maxSize / (1024 * 1024)}MB`
+        };
+    }
+    // Check file type
+    if (!allowedTypes.includes(file.type)) {
+        return {
+            isValid: false,
+            error: `File type ${file.type} is not allowed`
+        };
+    }
+    // Magic number validation
+    try {
+        const buffer = await file.arrayBuffer();
+        const magicNumberValid = validateMagicNumber(buffer, file.type);
+        if (!magicNumberValid) {
+            return {
+                isValid: false,
+                error: `File content does not match declared MIME type ${file.type}`
+            };
+        }
+    }
+    catch (error) {
+        return {
+            isValid: false,
+            error: 'Failed to read file for validation'
+        };
+    }
+    return { isValid: true };
 }
 /**
  * Validate file extension against allowed list
@@ -296,7 +534,7 @@ function validateFileExtension(extension, allowedExtensions) {
     if (!allowedExtensions || allowedExtensions.length === 0) {
         return true; // No restrictions
     }
-    var normalizedExtension = extension.toLowerCase().replace(/^\./, '');
+    const normalizedExtension = extension.toLowerCase().replace(/^\./, '');
     return allowedExtensions.includes(normalizedExtension);
 }
 /**
@@ -319,57 +557,37 @@ function sanitizeFilename(filename) {
  * @param windowMs Time window in milliseconds
  * @returns Middleware function
  */
-function apiRateLimit(maxRequests, windowMs) {
-    var _this = this;
-    if (maxRequests === void 0) { maxRequests = 100; }
-    if (windowMs === void 0) { windowMs = 60000; }
-    return function (req, res, next) { return __awaiter(_this, void 0, void 0, function () {
-        var ip, key, redis, currentCount, count, error_6;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown';
-                    key = "apiratelimit:".concat(ip, ":").concat(req.url);
-                    _a.label = 1;
-                case 1:
-                    _a.trys.push([1, 6, , 7]);
-                    return [4 /*yield*/, (0, redis_1.getRedisClient)()];
-                case 2:
-                    redis = _a.sent();
-                    return [4 /*yield*/, redis.get(key)];
-                case 3:
-                    currentCount = _a.sent();
-                    count = currentCount ? parseInt(currentCount, 10) : 0;
-                    // Set rate limit headers
-                    res.setHeader('X-RateLimit-Limit', maxRequests.toString());
-                    res.setHeader('X-RateLimit-Remaining', Math.max(0, maxRequests - count - 1).toString());
-                    if (count >= maxRequests) {
-                        // Rate limit exceeded
-                        res.setHeader('Retry-After', Math.ceil(windowMs / 1000).toString());
-                        return [2 /*return*/, res.status(429).json({ error: 'Too many requests, please try again later' })];
-                    }
-                    // Increment count and set expiry
-                    return [4 /*yield*/, redis.incr(key)];
-                case 4:
-                    // Increment count and set expiry
-                    _a.sent();
-                    return [4 /*yield*/, redis.expire(key, Math.ceil(windowMs / 1000))];
-                case 5:
-                    _a.sent();
-                    // Continue to the next middleware
-                    next();
-                    return [3 /*break*/, 7];
-                case 6:
-                    error_6 = _a.sent();
-                    // If Redis fails, allow the request but log the error
-                    console.error('Rate limiting error:', error_6);
-                    (0, monitoring_1.captureException)(error_6, { context: 'rate-limiting' });
-                    next();
-                    return [3 /*break*/, 7];
-                case 7: return [2 /*return*/];
+function apiRateLimit(maxRequests = 100, windowMs = 60000) {
+    return async (req, res, next) => {
+        // Get client IP address
+        const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown';
+        const key = `apiratelimit:${ip}:${req.url}`;
+        try {
+            const redis = await (0, redis_1.getRedisClient)();
+            // Get current count
+            const currentCount = await redis.get(key);
+            const count = currentCount ? parseInt(currentCount, 10) : 0;
+            // Set rate limit headers
+            res.setHeader('X-RateLimit-Limit', maxRequests.toString());
+            res.setHeader('X-RateLimit-Remaining', Math.max(0, maxRequests - count - 1).toString());
+            if (count >= maxRequests) {
+                // Rate limit exceeded
+                res.setHeader('Retry-After', Math.ceil(windowMs / 1000).toString());
+                return res.status(429).json({ error: 'Too many requests, please try again later' });
             }
-        });
-    }); };
+            // Increment count and set expiry
+            await redis.incr(key);
+            await redis.expire(key, Math.ceil(windowMs / 1000));
+            // Continue to the next middleware
+            next();
+        }
+        catch (error) {
+            // If Redis fails, allow the request but log the error
+            console.error('Rate limiting error:', error);
+            (0, monitoring_1.captureException)(error, { context: 'rate-limiting' });
+            next();
+        }
+    };
 }
 /**
  * Validate request body against a Zod schema
@@ -377,43 +595,38 @@ function apiRateLimit(maxRequests, windowMs) {
  * @returns Middleware function
  */
 function validateBody(schema) {
-    var _this = this;
-    return function (req, res, next) { return __awaiter(_this, void 0, void 0, function () {
-        var validatedData;
-        return __generator(this, function (_a) {
-            try {
-                validatedData = schema.parse(req.body);
-                // Replace request body with validated data
-                req.body = validatedData;
-                // Continue to the next middleware
-                next();
+    return async (req, res, next) => {
+        try {
+            // Validate request body
+            const validatedData = schema.parse(req.body);
+            // Replace request body with validated data
+            req.body = validatedData;
+            // Continue to the next middleware
+            next();
+        }
+        catch (error) {
+            if (error instanceof zod_1.z.ZodError) {
+                // Return validation errors
+                return res.status(400).json({
+                    error: 'Validation failed',
+                    details: error.errors,
+                });
             }
-            catch (error) {
-                if (error instanceof zod_1.z.ZodError) {
-                    // Return validation errors
-                    return [2 /*return*/, res.status(400).json({
-                            error: 'Validation failed',
-                            details: error.errors,
-                        })];
-                }
-                // Handle other errors
-                console.error('Validation error:', error);
-                (0, monitoring_1.captureException)(error, { context: 'input-validation' });
-                return [2 /*return*/, res.status(500).json({ error: 'Internal server error' })];
-            }
-            return [2 /*return*/];
-        });
-    }); };
+            // Handle other errors
+            console.error('Validation error:', error);
+            (0, monitoring_1.captureException)(error, { context: 'input-validation' });
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+    };
 }
 /**
  * CORS middleware
  * @param allowedOrigins Array of allowed origins
  * @returns Middleware function
  */
-function cors(allowedOrigins) {
-    if (allowedOrigins === void 0) { allowedOrigins = ['*']; }
-    return function (req, res, next) {
-        var origin = req.headers.origin;
+function cors(allowedOrigins = ['*']) {
+    return (req, res, next) => {
+        const origin = req.headers.origin;
         // Set CORS headers
         if (origin && (allowedOrigins.includes('*') || allowedOrigins.includes(origin))) {
             res.setHeader('Access-Control-Allow-Origin', origin);
@@ -448,8 +661,7 @@ function securityHeaders(req, res, next) {
  * @param length Length of the token
  * @returns Secure random token
  */
-function generateSecureToken(length) {
-    if (length === void 0) { length = 32; }
+function generateSecureToken(length = 32) {
     return crypto.randomBytes(length).toString('hex');
 }
 /**
@@ -457,15 +669,12 @@ function generateSecureToken(length) {
  * @param password Plain text password
  * @returns Hashed password
  */
-function hashPassword(password) {
-    return __awaiter(this, void 0, void 0, function () {
-        var salt, hash;
-        return __generator(this, function (_a) {
-            salt = crypto.randomBytes(16).toString('hex');
-            hash = crypto.pbkdf2Sync(password, salt, 1000, 64, 'sha512').toString('hex');
-            return [2 /*return*/, "".concat(salt, ":").concat(hash)];
-        });
-    });
+async function hashPassword(password) {
+    // This is a placeholder - in a real implementation, you would use bcrypt
+    // Example: return await bcrypt.hash(password, 10);
+    const salt = crypto.randomBytes(16).toString('hex');
+    const hash = crypto.pbkdf2Sync(password, salt, 1000, 64, 'sha512').toString('hex');
+    return `${salt}:${hash}`;
 }
 /**
  * Verify a password against a hash
@@ -473,15 +682,12 @@ function hashPassword(password) {
  * @param hashedPassword Hashed password
  * @returns Whether the password matches
  */
-function verifyPassword(password, hashedPassword) {
-    return __awaiter(this, void 0, void 0, function () {
-        var _a, salt, hash, verifyHash;
-        return __generator(this, function (_b) {
-            _a = hashedPassword.split(':'), salt = _a[0], hash = _a[1];
-            verifyHash = crypto.pbkdf2Sync(password, salt, 1000, 64, 'sha512').toString('hex');
-            return [2 /*return*/, hash === verifyHash];
-        });
-    });
+async function verifyPassword(password, hashedPassword) {
+    // This is a placeholder - in a real implementation, you would use bcrypt
+    // Example: return await bcrypt.compare(password, hashedPassword);
+    const [salt, hash] = hashedPassword.split(':');
+    const verifyHash = crypto.pbkdf2Sync(password, salt, 1000, 64, 'sha512').toString('hex');
+    return hash === verifyHash;
 }
 /**
  * Combine multiple middleware functions into a single middleware
@@ -489,11 +695,11 @@ function verifyPassword(password, hashedPassword) {
  * @returns Combined middleware function
  */
 function combineMiddleware(middlewares) {
-    return function (req, res, next) {
+    return (req, res, next) => {
         // Create a middleware chain
-        var runMiddleware = function (i) {
+        const runMiddleware = (i) => {
             if (i < middlewares.length) {
-                middlewares[i](req, res, function () { return runMiddleware(i + 1); });
+                middlewares[i](req, res, () => runMiddleware(i + 1));
             }
             else {
                 next();
@@ -508,62 +714,47 @@ function combineMiddleware(middlewares) {
  * @param options Configuration options
  * @returns Next.js API handler
  */
-function createSecureApiRoute(handler, options) {
-    var _this = this;
-    if (options === void 0) { options = {}; }
-    return function (req, res) { return __awaiter(_this, void 0, void 0, function () {
-        var _a, rateLimit, _b, corsOrigins, bodySchema, _c, methods, middlewares, executeMiddleware, error_7;
-        return __generator(this, function (_d) {
-            switch (_d.label) {
-                case 0:
-                    _a = options.rateLimit, rateLimit = _a === void 0 ? { maxRequests: 100, windowMs: 60000 } : _a, _b = options.corsOrigins, corsOrigins = _b === void 0 ? ['*'] : _b, bodySchema = options.bodySchema, _c = options.methods, methods = _c === void 0 ? ['GET', 'POST', 'PUT', 'DELETE'] : _c;
-                    // Check if method is allowed
-                    if (!methods.includes(req.method || 'GET')) {
-                        return [2 /*return*/, res.status(405).json({ error: 'Method not allowed' })];
-                    }
-                    middlewares = [
-                        securityHeaders,
-                        cors(corsOrigins),
-                        apiRateLimit(rateLimit.maxRequests, rateLimit.windowMs)
-                    ];
-                    // Add body validation if schema is provided
-                    if (bodySchema && ['POST', 'PUT', 'PATCH'].includes(req.method || '')) {
-                        middlewares.push(validateBody(bodySchema));
-                    }
-                    executeMiddleware = function () {
-                        return new Promise(function (resolve, reject) {
-                            combineMiddleware(middlewares)(req, res, function () { return resolve(); });
-                        });
-                    };
-                    _d.label = 1;
-                case 1:
-                    _d.trys.push([1, 4, , 5]);
-                    // Run middleware
-                    return [4 /*yield*/, executeMiddleware()];
-                case 2:
-                    // Run middleware
-                    _d.sent();
-                    // If response is already sent (e.g., by rate limiter), return
-                    if (res.writableEnded)
-                        return [2 /*return*/];
-                    // Execute handler
-                    return [4 /*yield*/, handler(req, res)];
-                case 3:
-                    // Execute handler
-                    _d.sent();
-                    return [3 /*break*/, 5];
-                case 4:
-                    error_7 = _d.sent();
-                    console.error('API route error:', error_7);
-                    (0, monitoring_1.captureException)(error_7, { context: 'api-route' });
-                    // If response is already sent, return
-                    if (res.writableEnded)
-                        return [2 /*return*/];
-                    // Send error response
-                    res.status(500).json({ error: 'Internal server error' });
-                    return [3 /*break*/, 5];
-                case 5: return [2 /*return*/];
-            }
-        });
-    }); };
+function createSecureApiRoute(handler, options = {}) {
+    return async (req, res) => {
+        // Default options
+        const { rateLimit = { maxRequests: 100, windowMs: 60000 }, corsOrigins = ['*'], bodySchema, methods = ['GET', 'POST', 'PUT', 'DELETE'] } = options;
+        // Check if method is allowed
+        if (!methods.includes(req.method || 'GET')) {
+            return res.status(405).json({ error: 'Method not allowed' });
+        }
+        // Create middleware stack
+        const middlewares = [
+            securityHeaders,
+            cors(corsOrigins),
+            apiRateLimit(rateLimit.maxRequests, rateLimit.windowMs)
+        ];
+        // Add body validation if schema is provided
+        if (bodySchema && ['POST', 'PUT', 'PATCH'].includes(req.method || '')) {
+            middlewares.push(validateBody(bodySchema));
+        }
+        // Execute middleware chain
+        const executeMiddleware = () => {
+            return new Promise((resolve, reject) => {
+                combineMiddleware(middlewares)(req, res, () => resolve());
+            });
+        };
+        try {
+            // Run middleware
+            await executeMiddleware();
+            // If response is already sent (e.g., by rate limiter), return
+            if (res.writableEnded)
+                return;
+            // Execute handler
+            await handler(req, res);
+        }
+        catch (error) {
+            console.error('API route error:', error);
+            (0, monitoring_1.captureException)(error, { context: 'api-route' });
+            // If response is already sent, return
+            if (res.writableEnded)
+                return;
+            // Send error response
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    };
 }
