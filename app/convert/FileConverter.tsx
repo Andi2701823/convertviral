@@ -24,6 +24,7 @@ interface UploadedFile {
   type: string;
   uploadedAt: Date;
   url?: string;
+  originalFile?: File;
 }
 
 interface ConversionJob {
@@ -50,7 +51,7 @@ interface FormatOption {
 }
 
 const FileConverter: React.FC<FileConverterProps> = ({ maxFileSize = 50 * 1024 * 1024 }) => {
-  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+  const [uploadedFiles, setUploadedFiles] = useState<UploadedFileWithId[]>([]);
   const [conversionJobs, setConversionJobs] = useState<ConversionJob[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
@@ -145,24 +146,34 @@ const FileConverter: React.FC<FileConverterProps> = ({ maxFileSize = 50 * 1024 *
   // Function to queue conversion for offline processing
   const queueOfflineConversion = async () => {
     const uploadedFile = uploadedFiles[0]; // Assuming only one file is processed at a time
-    if (!uploadedFile || !selectedFormat) return;
-    
+    if (!uploadedFile || !selectedFormat || !uploadedFile.originalFile) return;
+
     try {
       // Dynamically import to avoid SSR issues
       const { addPendingConversion } = await import('../../lib/offlineStorage');
-      
+
       // Create a unique ID for the conversion
       const conversionId = `offline-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
-      
+
+      // Create a new object that conforms to UploadedFileWithId
+      const uploadedFileWithId: UploadedFileWithId = {
+        id: conversionId, // Assign the generated ID
+        name: uploadedFile.name,
+        size: uploadedFile.size,
+        type: uploadedFile.type,
+        uploadedAt: new Date(), // Or use an existing timestamp if available
+        // url: uploadedFile.url, // If url is available on the original File object
+      };
+
       // Queue the conversion in IndexedDB
       await addPendingConversion({
         id: conversionId,
-        fileId: uploadedFile.id,
-        fileName: uploadedFile.name,
-        fromFormat: uploadedFile.name.split('.').pop() || '',
+        fileId: uploadedFileWithId.id,
+        fileName: uploadedFileWithId.name,
+        fromFormat: uploadedFileWithId.name.split('.').pop() || '',
         toFormat: targetFormats.find(f => f.id === selectedFormat)?.extension || selectedFormat,
-        fileSize: uploadedFile.size,
-        fileData: uploadedFile, // Store the file data for when we're back online
+        fileSize: uploadedFileWithId.size,
+        fileData: uploadedFile.originalFile, // Store the original File object for when we're back online
         targetFormat: selectedFormat,
         createdAt: new Date().toISOString()
       });
@@ -230,70 +241,25 @@ const FileConverter: React.FC<FileConverterProps> = ({ maxFileSize = 50 * 1024 *
   // Handle file drop
   const onDrop = useCallback((acceptedFiles: File[]) => {
     setUploadError(null);
-    const validFiles = acceptedFiles.filter(file => {
+    const filesWithIds: UploadedFileWithId[] = acceptedFiles.map(file => ({
+      id: `local-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
+      name: file.name,
+      size: file.size,
+      type: file.type,
+      uploadedAt: new Date(),
+      originalFile: file, // Store the original File object if needed later
+    })).filter(file => {
       if (file.size > maxFileSize) {
         setUploadError(`File ${file.name} is too large. Max size is ${formatFileSize(maxFileSize)}.`);
         return false;
       }
-    });
-
-    if (validFiles.length > 0) {
-      setUploadedFiles(validFiles);
-      setUploadError(null);
-      // Automatically trigger upload or further processing here if needed
-    }
-  }, [maxFileSize]);
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    noClick: true,
-    multiple: false,
-  });
-
-  return (
-    <div>
-      {/* Your component's JSX will go here */}
-      <p>FileConverter Component</p>
-      {uploadedFiles.length > 0 && (
-        <div>
-          <h3>Uploaded Files:</h3>
-          <ul>
-            {uploadedFiles.map((file, index) => (
-              <li key={index}>{file.name} ({file.size} bytes)</li>
-            ))}
-          </ul>
-        </div>
-      )}
-      {conversionJob && (
-        <div>
-          <h3>Conversion Status:</h3>
-          <p>Job ID: {conversionJob.jobId}</p>
-          <p>Status: {conversionJob.status}</p>
-          <p>Progress: {conversionJob.progress}%</p>
-          {conversionJob.stage && <p>Stage: {conversionJob.stage}</p>}
-          {conversionJob.error && <p>Error: {conversionJob.error}</p>}
-          {conversionJob.result && (
-            <p>Result: <a href={conversionJob.result} target="_blank" rel="noopener noreferrer">Download</a></p>
-          )}
-        </div>
-      )}
-      {uploadError && <p style={{ color: 'red' }}>Upload Error: {uploadError}</p>}
-      {conversionError && <p style={{ color: 'red' }}>Conversion Error: {conversionError}</p>}
-      {!isOnline && <p style={{ color: 'orange' }}>You are offline. Conversions will be queued.</p>}
-      {queuedForOffline && <p style={{ color: 'green' }}>Conversion queued for offline processing.</p>}
-    </div>
-  );
       return true;
     });
-    setUploadedFiles(prev => [...prev, ...validFiles]);
-  }, [maxFileSize]);
-        setSelectedFormat(formatsData.formats[0].id);
-      }
-    } catch (error) {
-      console.error('Upload error:', error);
-      setUploadError(error instanceof Error ? error.message : 'Failed to upload file');
-    } finally {
-      setIsUploading(false);
+
+    if (filesWithIds.length > 0) {
+      setUploadedFiles(filesWithIds);
+      setUploadError(null);
+      // Automatically trigger upload or further processing here if needed
     }
   }, [maxFileSize]);
 
@@ -318,7 +284,7 @@ const FileConverter: React.FC<FileConverterProps> = ({ maxFileSize = 50 * 1024 *
 
   // Start conversion
   const startConversion = async () => {
-    if (uploadedFiles.length === 0 || !selectedFormat) return;
+    if (uploadedFiles.length === 0 || !selectedFormat || !uploadedFiles[0].originalFile) return;
     
     setIsConverting(true);
     setConversionError(null);
@@ -338,13 +304,23 @@ const FileConverter: React.FC<FileConverterProps> = ({ maxFileSize = 50 * 1024 *
     }
     
     try {
+      const originalFile = uploadedFiles[0].originalFile; // Get the original File object
+      const fileId = `online-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+      const uploadedFileWithId: UploadedFileWithId = {
+        id: fileId,
+        name: originalFile.name,
+        size: originalFile.size,
+        type: originalFile.type,
+        uploadedAt: new Date(),
+      };
+
       const response = await fetch('/api/convert', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          fileId: uploadedFile.id,
+          fileId: uploadedFileWithId.id,
           targetFormat: selectedFormat,
         }),
       });
@@ -358,7 +334,7 @@ const FileConverter: React.FC<FileConverterProps> = ({ maxFileSize = 50 * 1024 *
       
       setConversionJob({
         jobId: data.jobId,
-        sourceFile: uploadedFile,
+        sourceFile: uploadedFileWithId,
         targetFormat: selectedFormat,
         status: 'processing',
         progress: 0,
@@ -384,7 +360,7 @@ const FileConverter: React.FC<FileConverterProps> = ({ maxFileSize = 50 * 1024 *
 
   // Reset the form
   const resetForm = () => {
-    setUploadedFile(null);
+    setUploadedFiles([]);
     setTargetFormats([]);
     setSelectedFormat('');
     setConversionJob(null);
@@ -408,7 +384,7 @@ const FileConverter: React.FC<FileConverterProps> = ({ maxFileSize = 50 * 1024 *
       <h2 className="text-2xl font-bold mb-6 text-center">Convert Your Files</h2>
       
       {/* Offline status indicator */}
-      {!isOnline && (
+      {!isOnline && ( 
         <div className="mb-4 p-3 bg-yellow-100 text-yellow-700 rounded-lg flex items-center justify-between">
           <div className="flex items-center">
             <FaWifi className="mr-2" />
@@ -422,6 +398,7 @@ const FileConverter: React.FC<FileConverterProps> = ({ maxFileSize = 50 * 1024 *
           </button>
         </div>
       )}
+
       
       {uploadedFiles.length === 0 && (
         <div 
@@ -460,43 +437,45 @@ const FileConverter: React.FC<FileConverterProps> = ({ maxFileSize = 50 * 1024 *
       )}
       
       {uploadedFiles.length > 0 && !conversionJob && (
-        <div className="mt-6">
-          <div className="p-4 bg-gray-100 rounded-lg mb-4">
-            <h3 className="font-semibold mb-2">Uploaded Files</h3>
-            <ul className="space-y-2">
-              {uploadedFiles.map(file => (
-                <li key={file.id} className="flex items-center justify-between p-2 bg-gray-100 dark:bg-gray-800 rounded-md">
-                  <div className="flex items-center space-x-2">
-                    <FaCheck className="text-green-500" />
-                    <span className="text-sm font-medium">{file.name}</span>
-                    <span className="text-xs text-gray-500">({formatFileSize(file.size)})</span>
-                  </div>
-                  <button 
-                    onClick={() => setUploadedFiles(files => files.filter(f => f.id !== file.id))}
-                    className="text-red-500 hover:text-red-700"
-                  >
-                    &times;
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </div>
-        <div className="mt-6">
-          <div className="p-4 bg-gray-100 rounded-lg mb-4">
-            <h3 className="font-semibold mb-2">Selected File</h3>
-            <div className="flex justify-between items-center">
-              <div>
-                <p className="text-sm truncate">{uploadedFile.name}</p>
-                <p className="text-xs text-gray-500">{formatFileSize(uploadedFile.size)}</p>
-              </div>
-              <button 
-                onClick={resetForm}
-                className="text-sm text-red-500 hover:text-red-700"
-              >
-                Remove
-              </button>
+        <>
+          <div className="mt-6">
+                <div className="p-4 bg-gray-100 rounded-lg mb-4">
+                  <h3 className="font-semibold mb-2">Uploaded Files</h3>
+              <ul className="space-y-2">
+                {uploadedFiles.map((file: UploadedFileWithId) => (
+                  <li key={file.id} className="flex items-center justify-between p-2 bg-gray-100 dark:bg-gray-800 rounded-md">
+                    <div className="flex items-center space-x-2">
+                      <FaCheck className="text-green-500" />
+                      <span className="text-sm font-medium">{file.name}</span>
+                      <span className="text-xs text-gray-500">({formatFileSize(file.size)})</span>
+                    </div>
+                    <button 
+                      onClick={() => setUploadedFiles(files => files.filter(f => f.id !== file.id))}
+                      className="text-red-500 hover:text-red-700"
+                    >
+                      &times;
+                    </button>
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
+          <div className="mt-6">
+            <div className="p-4 bg-gray-100 rounded-lg mb-4">
+              <h3 className="font-semibold mb-2">Selected File</h3>
+              <div className="flex justify-between items-center">
+                <div>
+                  <p className="text-sm truncate">{uploadedFiles[0]?.name}</p>
+                  <p className="text-xs text-gray-500">{formatFileSize(uploadedFiles[0]?.size)}</p>
+                </div>
+                <button 
+                  onClick={resetForm}
+                  className="text-sm text-red-500 hover:text-red-700"
+                >
+                  Remove
+                </button>
+              </div>
+            </div>
           
           {targetFormats.length > 0 ? (
             <div className="mb-4">
@@ -580,37 +559,37 @@ const FileConverter: React.FC<FileConverterProps> = ({ maxFileSize = 50 * 1024 *
           <div className="p-4 bg-gray-100 rounded-lg mb-4">
             <h3 className="font-semibold mb-2">
               {conversionJob.status === 'completed' ? 'Conversion Complete' : 
-               conversionJob.status === 'failed' ? 'Conversion Failed' : 
+               conversionJob?.status === 'failed' ? 'Conversion Failed' : 
                'Converting File'}
             </h3>
             
             <div className="mb-2">
-              <p className="text-sm truncate">{conversionJob.sourceFile.name}</p>
+              <p className="text-sm truncate">{(conversionJob as ConversionJob).sourceFile.name}</p>
               <p className="text-xs text-gray-500">
-                Converting to {targetFormats.find(f => f.id === conversionJob.targetFormat)?.name || conversionJob.targetFormat}
+                Converting to {targetFormats.find(f => f.id === (conversionJob as ConversionJob).targetFormat)?.name || (conversionJob as ConversionJob).targetFormat}
               </p>
             </div>
             
-            {conversionJob.status === 'processing' && (
+            {(conversionJob as ConversionJob).status === 'processing' && (
               <div className="mt-4">
                 <div className="w-full bg-gray-200 rounded-full h-4 dark:bg-gray-700 relative overflow-hidden">
                   <div 
                     className="bg-blue-600 h-4 rounded-full transition-all duration-500 ease-out"
-                    style={{ width: `${conversionJob.progress}%` }}
+                    style={{ width: `${(conversionJob as ConversionJob).progress}%` }}
                   ></div>
                   <div className="absolute inset-0 flex items-center justify-center">
                     <p className="text-xs font-semibold text-white mix-blend-difference">
-                      {conversionJob.stage === 'validating' && 'Validating file...'}
-                      {conversionJob.stage === 'converting' && `Converting... ${conversionJob.progress}%`}
-                      {conversionJob.stage === 'retrying' && `Retrying...`}
-                      {!conversionJob.stage && `Processing... ${conversionJob.progress}%`}
+                      {conversionJob?.stage === 'validating' && 'Validating file...'}
+                      {conversionJob?.stage === 'converting' && `Converting... ${conversionJob?.progress ?? 0}%`}
+                      {conversionJob?.stage === 'retrying' && `Retrying...`}
+                      {!(conversionJob?.stage) && `Processing... ${conversionJob?.progress ?? 0}%`}
                     </p>
                   </div>
                 </div>
               </div>
             )}
             
-            {conversionJob.status === 'completed' && conversionJob.result && (
+            {(conversionJob as ConversionJob).status === 'completed' && (conversionJob as ConversionJob).result && (
               <div className="mt-4">
                 <div className="flex items-center text-green-600 mb-2">
                   <FaCheck className="mr-2" />
@@ -618,19 +597,19 @@ const FileConverter: React.FC<FileConverterProps> = ({ maxFileSize = 50 * 1024 *
                 </div>
                 
                 <a
-                  href={conversionJob.result.downloadUrl}
-                  download={conversionJob.result.fileName}
+                  href={(conversionJob as ConversionJob).result?.downloadUrl}
+                  download={(conversionJob as ConversionJob).result?.fileName}
                   className="mt-2 inline-block bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-4 rounded-md transition-colors"
                 >
-                  Download ({formatFileSize(conversionJob.result.fileSize)})
+                  Download ({formatFileSize((conversionJob as ConversionJob).result?.fileSize)})
                 </a>
               </div>
             )}
             
-            {conversionJob.status === 'failed' && (
+            {(conversionJob as ConversionJob).status === 'failed' && (
               <div className="mt-4 p-3 bg-red-100 text-red-700 rounded-lg flex items-center">
                 <FaExclamationTriangle className="mr-2" />
-                {conversionJob.error || 'An unknown error occurred during conversion'}
+                {conversionJob?.error || 'An unknown error occurred during conversion'}
               </div>
             )}
             
