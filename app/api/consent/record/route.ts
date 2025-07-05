@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
     
     if (userId) {
       try {
-        const redis = getRedisClient();
+        const redis = await getRedisClient();
         const previousConsentStr = await redis.get(`user_consent:${userId}`);
         if (previousConsentStr) {
           const previousRecord = JSON.parse(previousConsentStr);
@@ -105,7 +105,7 @@ export async function POST(request: NextRequest) {
     const sevenYears = 7 * 365 * 24 * 60 * 60; // 7 years in seconds
     
     try {
-      const redis = getRedisClient();
+      const redis = await getRedisClient();
       
       // Store user-specific consent if authenticated
       if (userId) {
@@ -192,7 +192,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Get current consent
-    const redis = getRedisClient();
+    const redis = await getRedisClient();
     const currentConsentStr = await redis.get(`user_consent:${userId}`);
     let currentConsent = null;
     
@@ -287,7 +287,7 @@ export async function DELETE(request: NextRequest) {
 
     // Record withdrawal
     const withdrawalId = `withdrawal_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    const redis = getRedisClient();
+    const redis = await getRedisClient();
     
     await redis.setex(
       `user_consent:${userId}`,
