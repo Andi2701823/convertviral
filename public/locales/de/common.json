@@ -1,0 +1,33 @@
+{
+  "about": {
+    "story_title": "Unsere Geschichte",
+    "story_paragraph1": "ConvertViral entstand aus einer einfachen Idee: Dateikonvertierungen für jedermann mühelos und zugänglich zu machen. Wir bemerkten eine Lücke auf dem Markt für einen zuverlässigen, schnellen und sicheren Online-Konverter, der eine breite Palette von Formaten verarbeiten konnte, ohne Kompromisse bei Qualität oder Benutzerdatenschutz einzugehen. Unsere Reise begann im Jahr 2020, angetrieben von einer Leidenschaft für Technologie und dem Engagement, alltägliche digitale Herausforderungen zu lösen.",
+    "story_paragraph2": "Von einem kleinen Team engagierter Entwickler haben wir uns zu einer globalen Plattform entwickelt, der Millionen vertrauen. Wir innovieren kontinuierlich, fügen neue Funktionen hinzu und verbessern unsere Konvertierungsalgorithmen, um sicherzustellen, dass Sie jedes Mal die besten Ergebnisse erzielen. Unser Fokus liegt weiterhin auf der Bereitstellung einer nahtlosen Benutzererfahrung, egal ob Sie Dokumente, Bilder, Audio- oder Videodateien konvertieren.",
+    "mission_title": "Unsere Mission",
+    "mission_paragraph1": "Unsere Mission ist es, Einzelpersonen und Unternehmen zu stärken, indem wir digitale Arbeitsabläufe vereinfachen. Wir glauben, dass Technologie ein Werkzeug für Kreation und Effizienz sein sollte, keine Barriere. Indem wir einen kostenlosen, intuitiven und leistungsstarken Konvertierungsdienst anbieten, möchten wir Ihnen Zeit und Mühe ersparen, damit Sie sich auf das Wesentliche konzentrieren können.",
+    "mission_paragraph2": "Wir engagieren uns für kontinuierliche Verbesserung, Benutzerdatenschutz und Umweltverantwortung. Wir streben danach, einen nachhaltigen Dienst aufzubauen, der nicht nur Ihre aktuellen Bedürfnisse erfüllt, sondern auch zukünftige Anforderungen antizipiert, alles unter Einhaltung höchster Standards für Datensicherheit und Betriebseffizienz.",
+    "team_title": "Unser Team",
+    "team_member1_name": "Dr. Alex Schmidt",
+    "team_member1_role": "CEO & Gründer",
+    "team_member1_description": "Als visionärer Kopf mit einem Doktortitel in Informatik gründete Alex ConvertViral mit dem Ziel, die Dateikonvertierung zu demokratisieren. Seine Expertise in skalierbaren Systemen und benutzerzentriertem Design treibt unsere Produktinnovation voran.",
+    "team_member2_name": "Maria Rodriguez",
+    "team_member2_role": "Leiterin der Technikabteilung",
+    "team_member2_description": "Maria leitet unser Ingenieurteam und bringt über 15 Jahre Erfahrung in der Softwareentwicklung mit. Ihre Leidenschaft für sauberen Code und robuste Architektur sichert die Stabilität und Leistung unserer Plattform.",
+    "team_member3_name": "David Chen",
+    "team_member3_role": "Leitender UX/UI Designer",
+    "team_member3_description": "David ist der kreative Kopf hinter der intuitiven Benutzeroberfläche von ConvertViral. Mit einem scharfen Auge für Details und einem tiefen Verständnis des Benutzerverhaltens schafft er Erlebnisse, die sowohl schön als auch funktional sind.",
+    "team_member4_name": "Sophia Lee",
+    "team_member4_role": "Marketingdirektorin",
+    "team_member4_description": "Sophia ist dafür verantwortlich, die Geschichte von ConvertViral in die Welt zu tragen. Ihre strategischen Einblicke und innovativen Kampagnen helfen uns, neue Nutzer zu erreichen und eine starke Gemeinschaft aufzubauen.",
+    "cta_section_title": "Bereit für mühelose Konvertierungen?",
+    "cta_section_description": "Schließen Sie sich Millionen zufriedener Benutzer an, die ConvertViral für ihre täglichen Konvertierungsbedürfnisse vertrauen. Schnell, sicher und unglaublich einfach zu bedienen.",
+    "cta_button_text": "Jetzt konvertieren",
+    "stats_title": "Unser Einfluss in Zahlen",
+    "stats_conversions_count": "500 Millionen+",
+    "stats_conversions_text": "Dateien konvertiert",
+    "stats_users_count": "10 Millionen+",
+    "stats_users_text": "Zufriedene Nutzer weltweit",
+    "stats_formats_count": "500+",
+    "stats_formats_text": "Unterstützte Formate"
+  }
+}
