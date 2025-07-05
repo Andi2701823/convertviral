@@ -16,11 +16,21 @@ export async function POST(request: NextRequest) {
 
   while (retryCount <= MAX_WEBHOOK_RETRIES) {
     try {
-      const body = await request.text();
-      const signature = headers().get('stripe-signature') as string;
-
-      // Stripe Webhook-Secret aus den Umgebungsvariablen abrufen
+      // Validate Stripe configuration at runtime
+      const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
       const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+      
+      if (!stripeSecretKey) {
+        const error = new Error('STRIPE_SECRET_KEY environment variable is not configured');
+        securityLogger.error('stripe_configuration_error', {
+          error: error.message
+        });
+        return NextResponse.json(
+          { error: 'Stripe configuration is incomplete' },
+          { status: 500 }
+        );
+      }
+      
       if (!webhookSecret) {
         const error = new Error('Stripe Webhook-Secret ist nicht konfiguriert');
         securityLogger.error('webhook_configuration_error', {
@@ -31,6 +41,9 @@ export async function POST(request: NextRequest) {
           { status: 500 }
         );
       }
+
+      const body = await request.text();
+      const signature = headers().get('stripe-signature') as string;
 
       // Ereignis verifizieren
       let event;

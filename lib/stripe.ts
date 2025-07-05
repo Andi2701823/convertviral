@@ -1,9 +1,45 @@
 import Stripe from 'stripe';
 import { securityLogger } from './security';
 
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-06-30.basil',
-  typescript: true
+// Lazy initialization of Stripe client to handle build-time scenarios
+let _stripe: Stripe | null = null;
+
+function getStripeClient(): Stripe {
+  if (_stripe) {
+    return _stripe;
+  }
+  
+  const secretKey = process.env.STRIPE_SECRET_KEY;
+  
+  if (!secretKey) {
+    // During build time or when env vars are missing
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error('STRIPE_SECRET_KEY environment variable is required for production');
+    }
+    
+    // For development, create a placeholder that will work for build but fail at runtime
+    console.warn('STRIPE_SECRET_KEY not found. Using placeholder for development.');
+    _stripe = new Stripe('sk_test_placeholder_for_build', {
+      apiVersion: '2025-06-30.basil',
+      typescript: true
+    });
+  } else {
+    _stripe = new Stripe(secretKey, {
+      apiVersion: '2025-06-30.basil',
+      typescript: true
+    });
+  }
+  
+  return _stripe;
+}
+
+// Export a proxy object that lazily initializes the Stripe client
+export const stripe = new Proxy({} as Stripe, {
+  get(target, prop) {
+    const client = getStripeClient();
+    const value = (client as any)[prop];
+    return typeof value === 'function' ? value.bind(client) : value;
+  }
 });
 
 // Deutschland-spezifische Konfiguration
