@@ -437,10 +437,10 @@ const FileConverter: React.FC<FileConverterProps> = ({ maxFileSize = 50 * 1024 *
       )}
       
       {uploadedFiles.length > 0 && !conversionJob && (
-        <>
+        <div>
           <div className="mt-6">
-                <div className="p-4 bg-gray-100 rounded-lg mb-4">
-                  <h3 className="font-semibold mb-2">Uploaded Files</h3>
+            <div className="p-4 bg-gray-100 rounded-lg mb-4">
+              <h3 className="font-semibold mb-2">Uploaded Files</h3>
               <ul className="space-y-2">
                 {uploadedFiles.map((file: UploadedFileWithId) => (
                   <li key={file.id} className="flex items-center justify-between p-2 bg-gray-100 dark:bg-gray-800 rounded-md">
@@ -521,6 +521,7 @@ const FileConverter: React.FC<FileConverterProps> = ({ maxFileSize = 50 * 1024 *
               {conversionError}
             </div>
           )}
+          </div>
         </div>
       )}
       
@@ -558,7 +559,7 @@ const FileConverter: React.FC<FileConverterProps> = ({ maxFileSize = 50 * 1024 *
         <div className="mt-6">
           <div className="p-4 bg-gray-100 rounded-lg mb-4">
             <h3 className="font-semibold mb-2">
-              {conversionJob.status === 'completed' ? 'Conversion Complete' : 
+              {conversionJob?.status === 'completed' ? 'Conversion Complete' : 
                conversionJob?.status === 'failed' ? 'Conversion Failed' : 
                'Converting File'}
             </h3>
@@ -575,7 +576,7 @@ const FileConverter: React.FC<FileConverterProps> = ({ maxFileSize = 50 * 1024 *
                 <div className="w-full bg-gray-200 rounded-full h-4 dark:bg-gray-700 relative overflow-hidden">
                   <div 
                     className="bg-blue-600 h-4 rounded-full transition-all duration-500 ease-out"
-                    style={{ width: `${(conversionJob as ConversionJob).progress}%` }}
+                    style={{ width: `${(conversionJob as ConversionJob)?.progress ?? 0}%` }}
                   ></div>
                   <div className="absolute inset-0 flex items-center justify-center">
                     <p className="text-xs font-semibold text-white mix-blend-difference">
@@ -601,7 +602,7 @@ const FileConverter: React.FC<FileConverterProps> = ({ maxFileSize = 50 * 1024 *
                   download={(conversionJob as ConversionJob).result?.fileName}
                   className="mt-2 inline-block bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-4 rounded-md transition-colors"
                 >
-                  Download ({formatFileSize((conversionJob as ConversionJob).result?.fileSize)})
+                  Download ({formatFileSize((conversionJob as ConversionJob).result?.fileSize ?? 0)})
                 </a>
               </div>
             )}
