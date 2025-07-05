@@ -109,7 +109,7 @@ export async function POST(request: NextRequest) {
       
       // Store user-specific consent if authenticated
       if (userId) {
-        await redis.setex(
+        await redis.setEx(
           `user_consent:${userId}`,
           sevenYears,
           JSON.stringify(enhancedConsentRecord)
@@ -117,24 +117,24 @@ export async function POST(request: NextRequest) {
       }
       
       // Store session-specific consent for anonymous users
-      await redis.setex(
+      await redis.setEx(
         `session_consent:${sessionId}`,
         sevenYears,
         JSON.stringify(enhancedConsentRecord)
       );
       
       // Store audit log
-      await redis.setex(
+      await redis.setEx(
         `consent_audit:${consentId}`,
         sevenYears,
         JSON.stringify(auditLog)
       );
       
       // Add to audit log list for compliance reporting
-      await redis.lpush('consent_audit_log', consentId);
+      await redis.lPush('consent_audit_log', consentId);
       
       // Keep only last 10000 audit entries in the list
-      await redis.ltrim('consent_audit_log', 0, 9999);
+      await redis.lTrim('consent_audit_log', 0, 9999);
       
     } catch (redisError) {
       console.error('Redis storage error:', redisError);
@@ -201,7 +201,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Get consent history from audit log
-    const auditLogIds = await redis.lrange('consent_audit_log', 0, -1);
+    const auditLogIds = await redis.lRange('consent_audit_log', 0, -1);
     const userAuditLogs = [];
     
     for (const logId of auditLogIds) {
@@ -289,7 +289,7 @@ export async function DELETE(request: NextRequest) {
     const withdrawalId = `withdrawal_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     const redis = await getRedisClient();
     
-    await redis.setex(
+    await redis.setEx(
       `user_consent:${userId}`,
       7 * 365 * 24 * 60 * 60, // 7 years
       JSON.stringify(withdrawalRecord)
@@ -307,13 +307,13 @@ export async function DELETE(request: NextRequest) {
       action: 'withdrawn',
     };
 
-    await redis.setex(
+    await redis.setEx(
       `consent_audit:${withdrawalId}`,
       7 * 365 * 24 * 60 * 60,
       JSON.stringify(auditLog)
     );
 
-    await redis.lpush('consent_audit_log', withdrawalId);
+    await redis.lPush('consent_audit_log', withdrawalId);
 
     // Log security event
     securityLogger.info('User withdrew consent', {
