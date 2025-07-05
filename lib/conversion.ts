@@ -25,6 +25,7 @@ export interface ConversionJob {
   createdAt: number;
   priority: 'normal' | 'high';
   isPremium: boolean;
+  stage?: 'uploading' | 'validating' | 'converting' | 'retrying';
 }
 
 // Define conversion result type
