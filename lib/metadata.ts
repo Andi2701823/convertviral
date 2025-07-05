@@ -4,7 +4,7 @@ import { Metadata } from 'next';
 export const siteConfig = {
   name: 'ConvertViral',
   description: 'Convert any file format with our fast, free, and easy-to-use online file converter.',
-  url: process.env.NEXTAUTH_URL || 'http://localhost:3000',
+  url: process.env.NEXT_PUBLIC_SITE_URL || 'https://convertviral.netlify.app',
   ogImage: '/og-image.jpg',
   twitterImage: '/twitter-image.jpg',
   authors: [{ name: 'ConvertViral Team' }],

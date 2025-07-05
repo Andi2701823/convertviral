@@ -9,7 +9,7 @@ import { fileFormats, FileFormat } from '../lib/fileTypes';
  * based on the file formats supported by the application.
  */
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://convertviral.com';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://convertviral.netlify.app';
 const PUBLIC_DIR = path.join(process.cwd(), 'public');
 const SITEMAPS_DIR = path.join(PUBLIC_DIR, 'sitemaps');
 

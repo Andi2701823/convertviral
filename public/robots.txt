@@ -9,9 +9,9 @@ Disallow: /dashboard/
 Disallow: /settings/
 
 # Host
-Host: https://convertviral.com
+Host: https://convertviral.netlify.app
 
 # Sitemaps
-Sitemap: https://convertviral.com/sitemap.xml
-Sitemap: https://convertviral.com/sitemaps/conversion-sitemaps.xml
-Sitemap: https://convertviral.com/sitemaps/format-sitemaps.xml
+Sitemap: https://convertviral.netlify.app/sitemap.xml
+Sitemap: https://convertviral.netlify.app/sitemaps/conversion-sitemaps.xml
+Sitemap: https://convertviral.netlify.app/sitemaps/format-sitemaps.xml
