@@ -1,0 +1,186 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                     String          @id @default(cuid())
+  name                   String?
+  email                  String?         @unique
+  emailVerified          DateTime?
+  image                  String?
+  createdAt              DateTime        @default(now())
+  updatedAt              DateTime        @updatedAt
+  points                 Int             @default(0)
+  level                  Int             @default(1)
+  xp                     Int             @default(0)
+  streak                 Int             @default(0)
+  lastActive             DateTime?
+  country                String?
+  referralCode           String?         @unique
+  referredBy             String?
+  isPremium              Boolean         @default(false)
+  stripeCustomerId       String?
+  defaultPaymentMethodId String?
+  conversions            Conversion[]
+  badges                 UserBadge[]
+  challenges             UserChallenge[]
+  dailyPoints            DailyPoints[]
+  subscriptions          Subscription[]
+  invoices               Invoice[]
+  referrals              User[]          @relation("UserReferrals")
+  referrer               User?           @relation("UserReferrals", fields: [referredBy], references: [id], onDelete: SetNull)
+}
+
+model Conversion {
+  id           String           @id @default(cuid())
+  userId       String?
+  user         User?            @relation(fields: [userId], references: [id], onDelete: SetNull)
+  sourceFormat String
+  targetFormat String
+  sourceSize   Int // in bytes
+  resultSize   Int? // in bytes
+  status       ConversionStatus @default(PENDING)
+  sourceUrl    String // URL to the source file
+  resultUrl    String? // URL to the converted file
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+  isPublic     Boolean          @default(false)
+  shareCount   Int              @default(0)
+  pointsEarned Int              @default(0) // Points earned for this conversion
+  batchId      String? // For batch conversions
+}
+
+enum ConversionStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+model Badge {
+  id          String      @id @default(cuid())
+  name        String      @unique
+  description String
+  imageUrl    String
+  criteria    String // JSON string with criteria for earning the badge
+  category    String // 'conversion', 'achievement', 'special'
+  difficulty  String // 'easy', 'medium', 'hard', 'legendary'
+  points      Int         @default(0) // Bonus points for earning this badge
+  users       UserBadge[]
+}
+
+model UserBadge {
+  id       String   @id @default(cuid())
+  userId   String
+  badgeId  String
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  badge    Badge    @relation(fields: [badgeId], references: [id], onDelete: Cascade)
+  earnedAt DateTime @default(now())
+
+  @@unique([userId, badgeId])
+}
+
+model Challenge {
+  id          String          @id @default(cuid())
+  title       String
+  description String
+  type        String // e.g., 'conversion', 'format', 'share'
+  requirement Int // Number required to complete
+  formatType  String? // For format-specific challenges
+  criteria    String // JSON string with criteria for completing the challenge
+  points      Int // Points awarded for completion
+  isDaily     Boolean         @default(true)
+  isActive    Boolean         @default(true)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  users       UserChallenge[]
+}
+
+model UserChallenge {
+  id          String    @id @default(cuid())
+  userId      String
+  challengeId String
+  progress    Int       @default(0)
+  completed   Boolean   @default(false)
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  challenge   Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, challengeId])
+}
+
+model DailyPoints {
+  id     String   @id @default(cuid())
+  userId String
+  points Int
+  date   DateTime @default(now())
+  source String // e.g., 'conversion', 'challenge', 'streak', 'referral'
+  user   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, date])
+}
+
+model Subscription {
+  id                   String   @id @default(cuid())
+  userId               String
+  user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stripeSubscriptionId String   @unique
+  status               String // 'active', 'canceled', 'incomplete', 'past_due', 'trialing', 'unpaid'
+  priceId              String
+  currentPeriodEnd     DateTime
+  cancelAtPeriodEnd    Boolean  @default(false)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  @@index([userId])
+  @@index([stripeSubscriptionId])
+}
+
+model Invoice {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stripeInvoiceId String   @unique
+  subscriptionId  String?
+  amount          Int // in cents
+  status          String // 'paid', 'open', 'void', 'draft', 'uncollectible'
+  invoiceUrl      String?
+  invoicePdf      String?
+  createdAt       DateTime @default(now())
+
+  @@index([userId])
+}
+
+model WaitlistEntry {
+  id                String   @id @default(cuid())
+  email             String   @unique
+  name              String?
+  planType          String   // 'premium', 'business'
+  discountCode      String?  // Early bird discount code
+  discountApplied   Boolean  @default(false)
+  referralCode      String?  // For tracking referrals
+  referredBy        String?  // ID of the user who referred
+  socialShare       Boolean  @default(false) // Whether they shared on social
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  notificationsSent Int      @default(0) // Count of notifications sent
+  lastNotified      DateTime?
+  convertedToUser   Boolean  @default(false) // Whether they became a paying user
+  convertedAt       DateTime?
+  ipAddress         String?  // For preventing duplicate signups
+  source            String?  // Where they signed up from
+  
+  @@index([email])
+  @@index([planType])
+  @@index([referralCode])
+}

@@ -1,0 +1,19 @@
+{
+  "banner_title": "Cookie Consent",
+  "banner_description": "We use cookies to enhance your browsing experience, analyze site traffic, and personalize content.",
+  "show_details": "Show details",
+  "hide_details": "Hide details",
+  "essential_title": "Essential Cookies",
+  "essential_description": "These cookies are necessary for the website to function and cannot be switched off in our systems.",
+  "analytics_title": "Analytics Cookies",
+  "analytics_description": "These cookies allow us to count visits and traffic sources so we can measure and improve the performance of our site.",
+  "marketing_title": "Marketing Cookies",
+  "marketing_description": "These cookies may be set through our site by our advertising partners to build a profile of your interests.",
+  "learn_more": "To learn more, please read our",
+  "privacy_policy": "Privacy Policy",
+  "and": "and",
+  "cookie_policy": "Cookie Policy",
+  "essential_only": "Essential Only",
+  "accept_selected": "Accept Selected",
+  "accept_all": "Accept All"
+}

@@ -1,0 +1,17 @@
+# *
+User-agent: *
+Allow: /
+
+# *
+User-agent: *
+Disallow: /api/
+Disallow: /dashboard/
+Disallow: /settings/
+
+# Host
+Host: https://convertviral.com
+
+# Sitemaps
+Sitemap: https://convertviral.com/sitemap.xml
+Sitemap: https://convertviral.com/sitemaps/conversion-sitemaps.xml
+Sitemap: https://convertviral.com/sitemaps/format-sitemaps.xml

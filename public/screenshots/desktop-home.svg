@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080" fill="none">
+  <rect width="1920" height="1080" fill="#F3F4F6"/>
+  
+  <!-- Header -->
+  <rect y="0" width="1920" height="80" fill="#0EA5E9"/>
+  <rect x="100" y="25" width="150" height="30" rx="5" fill="white"/>
+  <rect x="1000" y="25" width="100" height="30" rx="5" fill="white"/>
+  <rect x="1120" y="25" width="100" height="30" rx="5" fill="white"/>
+  <rect x="1240" y="25" width="100" height="30" rx="5" fill="white"/>
+  <rect x="1360" y="25" width="100" height="30" rx="5" fill="white"/>
+  <rect x="1600" y="25" width="120" height="30" rx="15" fill="white"/>
+  
+  <!-- Hero Section -->
+  <rect x="300" y="150" width="1320" height="80" rx="5" fill="#1E293B"/>
+  <rect x="300" y="250" width="800" height="40" rx="5" fill="#475569"/>
+  
+  <!-- Two Column Layout -->
+  <rect x="300" y="350" width="700" height="400" rx="10" stroke="#0EA5E9" stroke-width="4" fill="white" stroke-dasharray="15 10"/>
+  <circle cx="650" cy="500" r="70" fill="#0EA5E9"/>
+  <rect x="575" y="600" width="150" height="40" rx="5" fill="#0EA5E9"/>
+  
+  <!-- Right Column - Popular Conversions -->
+  <rect x="1050" y="350" width="570" height="60" rx="5" fill="#1E293B"/>
+  <rect x="1050" y="430" width="120" height="80" rx="10" fill="#0EA5E9"/>
+  <rect x="1190" y="430" width="120" height="80" rx="10" fill="#0EA5E9"/>
+  <rect x="1330" y="430" width="120" height="80" rx="10" fill="#0EA5E9"/>
+  <rect x="1470" y="430" width="120" height="80" rx="10" fill="#0EA5E9"/>
+  
+  <rect x="1050" y="530" width="120" height="80" rx="10" fill="#0EA5E9"/>
+  <rect x="1190" y="530" width="120" height="80" rx="10" fill="#0EA5E9"/>
+  <rect x="1330" y="530" width="120" height="80" rx="10" fill="#0EA5E9"/>
+  <rect x="1470" y="530" width="120" height="80" rx="10" fill="#0EA5E9"/>
+  
+  <!-- Testimonials -->
+  <rect x="300" y="800" width="1320" height="60" rx="5" fill="#1E293B"/>
+  
+  <rect x="300" y="880" width="400" height="150" rx="10" fill="white" stroke="#0EA5E9" stroke-width="2"/>
+  <circle cx="350" cy="930" r="30" fill="#0EA5E9"/>
+  <rect x="400" y="910" width="250" height="15" rx="5" fill="#475569"/>
+  <rect x="400" y="935" width="250" height="15" rx="5" fill="#475569"/>
+  <rect x="400" y="960" width="200" height="15" rx="5" fill="#475569"/>
+  
+  <rect x="760" y="880" width="400" height="150" rx="10" fill="white" stroke="#0EA5E9" stroke-width="2"/>
+  <circle cx="810" cy="930" r="30" fill="#0EA5E9"/>
+  <rect x="860" y="910" width="250" height="15" rx="5" fill="#475569"/>
+  <rect x="860" y="935" width="250" height="15" rx="5" fill="#475569"/>
+  <rect x="860" y="960" width="200" height="15" rx="5" fill="#475569"/>
+  
+  <rect x="1220" y="880" width="400" height="150" rx="10" fill="white" stroke="#0EA5E9" stroke-width="2"/>
+  <circle cx="1270" cy="930" r="30" fill="#0EA5E9"/>
+  <rect x="1320" y="910" width="250" height="15" rx="5" fill="#475569"/>
+  <rect x="1320" y="935" width="250" height="15" rx="5" fill="#475569"/>
+  <rect x="1320" y="960" width="200" height="15" rx="5" fill="#475569"/>
+  
+  <!-- Footer -->
+  <rect y="1080" width="1920" height="0" fill="#1E293B"/>
+</svg>
