@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '../../auth/[...nextauth]/route';
-import { redis } from '../../../../lib/redis';
-import { SecurityLogger } from '../../../../lib/security';
+import { authOptions } from '@/lib/auth';
+import { getRedisClient } from '@/lib/redis';
+import { securityLogger } from '@/lib/security';
 
 // GDPR consent record interface
 interface ConsentRecord {
@@ -57,6 +57,7 @@ export async function POST(request: NextRequest) {
     
     if (userId) {
       try {
+        const redis = getRedisClient();
         const previousConsentStr = await redis.get(`user_consent:${userId}`);
         if (previousConsentStr) {
           const previousRecord = JSON.parse(previousConsentStr);
@@ -104,6 +105,8 @@ export async function POST(request: NextRequest) {
     const sevenYears = 7 * 365 * 24 * 60 * 60; // 7 years in seconds
     
     try {
+      const redis = getRedisClient();
+      
       // Store user-specific consent if authenticated
       if (userId) {
         await redis.setex(
@@ -139,19 +142,15 @@ export async function POST(request: NextRequest) {
     }
 
     // Log security event
-    SecurityLogger.logSecurityEvent({
+    securityLogger.info('User consent recorded', {
       type: 'CONSENT_RECORDED',
-      severity: 'INFO',
-      message: `User consent ${action}`,
+      action,
       userId,
       ip: enhancedConsentRecord.ip!,
       userAgent,
-      metadata: {
-        consentId,
-        action,
-        consents: body.consents,
-        dataTransferConsent: body.dataTransferConsent,
-      },
+      consentId,
+      consents: body.consents,
+      dataTransferConsent: body.dataTransferConsent,
     });
 
     // Return success response
@@ -165,10 +164,8 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Error recording consent:', error);
     
-    SecurityLogger.logSecurityEvent({
+    securityLogger.error('Failed to record user consent', {
       type: 'CONSENT_RECORD_ERROR',
-      severity: 'ERROR',
-      message: 'Failed to record user consent',
       error: error instanceof Error ? error.message : 'Unknown error',
       ip: request.headers.get('x-forwarded-for') || 'unknown',
       userAgent: request.headers.get('user-agent') || 'unknown',
@@ -195,6 +192,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Get current consent
+    const redis = getRedisClient();
     const currentConsentStr = await redis.get(`user_consent:${userId}`);
     let currentConsent = null;
     
@@ -289,6 +287,7 @@ export async function DELETE(request: NextRequest) {
 
     // Record withdrawal
     const withdrawalId = `withdrawal_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const redis = getRedisClient();
     
     await redis.setex(
       `user_consent:${userId}`,
@@ -317,17 +316,13 @@ export async function DELETE(request: NextRequest) {
     await redis.lpush('consent_audit_log', withdrawalId);
 
     // Log security event
-    SecurityLogger.logSecurityEvent({
+    securityLogger.info('User withdrew consent', {
       type: 'CONSENT_WITHDRAWN',
-      severity: 'INFO',
-      message: 'User withdrew consent',
       userId,
       ip: withdrawalRecord.ip!,
       userAgent,
-      metadata: {
-        withdrawalId,
-        timestamp: auditLog.timestamp,
-      },
+      withdrawalId,
+      timestamp: auditLog.timestamp,
     });
 
     return NextResponse.json({
