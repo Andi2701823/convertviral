@@ -144,6 +144,7 @@ const FileConverter: React.FC<FileConverterProps> = ({ maxFileSize = 50 * 1024 *
   
   // Function to queue conversion for offline processing
   const queueOfflineConversion = async () => {
+    const uploadedFile = uploadedFiles[0]; // Assuming only one file is processed at a time
     if (!uploadedFile || !selectedFormat) return;
     
     try {
@@ -210,15 +211,19 @@ const FileConverter: React.FC<FileConverterProps> = ({ maxFileSize = 50 * 1024 *
               setConversionError(data.error);
               clearInterval(interval);
             }
+          } else {
+            console.error('Failed to fetch conversion progress:', response.statusText);
+            setConversionError('Failed to fetch conversion progress');
+            clearInterval(interval);
           }
         } catch (error) {
-          console.error('Error fetching progress:', error);
+          console.error('Error fetching conversion progress:', error);
+          setConversionError('Error fetching conversion progress');
+          clearInterval(interval);
         }
-      }, 2000);
+      }, 3000); // Poll every 3 seconds
       
-      return () => {
-        clearInterval(interval);
-      };
+      return () => clearInterval(interval);
     }
   }, [conversionJob]);
 
@@ -230,6 +235,54 @@ const FileConverter: React.FC<FileConverterProps> = ({ maxFileSize = 50 * 1024 *
         setUploadError(`File ${file.name} is too large. Max size is ${formatFileSize(maxFileSize)}.`);
         return false;
       }
+    });
+
+    if (validFiles.length > 0) {
+      setUploadedFiles(validFiles);
+      setUploadError(null);
+      // Automatically trigger upload or further processing here if needed
+    }
+  }, [maxFileSize]);
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    noClick: true,
+    multiple: false,
+  });
+
+  return (
+    <div>
+      {/* Your component's JSX will go here */}
+      <p>FileConverter Component</p>
+      {uploadedFiles.length > 0 && (
+        <div>
+          <h3>Uploaded Files:</h3>
+          <ul>
+            {uploadedFiles.map((file, index) => (
+              <li key={index}>{file.name} ({file.size} bytes)</li>
+            ))}
+          </ul>
+        </div>
+      )}
+      {conversionJob && (
+        <div>
+          <h3>Conversion Status:</h3>
+          <p>Job ID: {conversionJob.jobId}</p>
+          <p>Status: {conversionJob.status}</p>
+          <p>Progress: {conversionJob.progress}%</p>
+          {conversionJob.stage && <p>Stage: {conversionJob.stage}</p>}
+          {conversionJob.error && <p>Error: {conversionJob.error}</p>}
+          {conversionJob.result && (
+            <p>Result: <a href={conversionJob.result} target="_blank" rel="noopener noreferrer">Download</a></p>
+          )}
+        </div>
+      )}
+      {uploadError && <p style={{ color: 'red' }}>Upload Error: {uploadError}</p>}
+      {conversionError && <p style={{ color: 'red' }}>Conversion Error: {conversionError}</p>}
+      {!isOnline && <p style={{ color: 'orange' }}>You are offline. Conversions will be queued.</p>}
+      {queuedForOffline && <p style={{ color: 'green' }}>Conversion queued for offline processing.</p>}
+    </div>
+  );
       return true;
     });
     setUploadedFiles(prev => [...prev, ...validFiles]);
