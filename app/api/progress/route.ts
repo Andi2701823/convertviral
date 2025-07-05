@@ -39,7 +39,6 @@ export async function GET(request: NextRequest) {
       sourceFormat: job.sourceFormat,
       targetFormat: job.targetFormat,
       estimatedTimeRemaining: calculateEstimatedTime(progress, job.sourceSize),
-      stage: (job as any).stage,
     });
   } catch (error) {
     console.error('Get progress error:', error);

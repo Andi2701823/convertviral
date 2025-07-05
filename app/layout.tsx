@@ -73,6 +73,7 @@ export default async function RootLayout({
         <Suspense fallback={null}>
           <HreflangTags />
         </Suspense>
+        <meta name="google-site-verification" content="8JuqKkIod-KCDrentWueKmaFj3BnMqnp1HXQ9tcC7hk" />
       </head>
       <body className={inter.className}>
         <NextIntlClientProvider locale={locale} messages={messages}>
