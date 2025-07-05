@@ -2,8 +2,8 @@ import Stripe from 'stripe';
 import { securityLogger } from './security';
 
 export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-06-20',
-  typescript: true,
+  apiVersion: '2025-06-30.basil',
+  typescript: true
 });
 
 // Deutschland-spezifische Konfiguration
@@ -73,7 +73,7 @@ export async function createSubscription(
 
     // Add coupon if provided
     if (options.couponId) {
-      subscriptionData.coupon = options.couponId;
+      subscriptionData.discounts = [{ coupon: options.couponId }];
     }
 
     // Add trial period if provided
@@ -111,7 +111,7 @@ export async function createCustomer({
 }: {
   email: string;
   name?: string;
-  address?: Stripe.CustomerCreateParams.Address;
+  address?: Stripe.AddressParam;
   taxId?: string;
   metadata?: Record<string, string>;
 }) {
@@ -135,7 +135,7 @@ export async function createCustomer({
     // Add German tax ID if provided
     if (taxId) {
       customerData.tax_id_data = [{
-        type: 'de_vat',
+        type: 'eu_vat',
         value: taxId
       }];
     }
@@ -271,7 +271,7 @@ export async function cancelSubscription(
     securityLogger.info('subscription_cancelled', {
       subscriptionId,
       cancelAtPeriodEnd,
-      currentPeriodEnd: new Date(subscription.current_period_end * 1000).toISOString()
+      currentPeriodEnd: (subscription as any).current_period_end ? new Date((subscription as any).current_period_end * 1000).toISOString() : undefined
     });
 
     return subscription;

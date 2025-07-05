@@ -73,7 +73,7 @@ export async function POST(request: NextRequest) {
     // Calculate totals and taxes for each item
     const invoiceItems = validatedData.items.map(item => {
       const totalAmount = item.amount * item.quantity;
-      const taxInfo = calculateGermanTax(totalAmount, item.taxRate);
+      const taxInfo = calculateGermanTax(totalAmount, item.taxRate === 'standard');
       
       return {
         ...item,
@@ -88,26 +88,26 @@ export async function POST(request: NextRequest) {
     const total = subtotal + totalTax;
 
     // Create invoice using German-compliant function
-    const invoice = await generateInvoice({
-      customer: customerId,
-      items: invoiceItems.map(item => ({
+    const invoice = await generateInvoice(
+      customerId,
+      invoiceItems.map(item => ({
         description: item.description,
         amount: item.totalAmount,
-        quantity: item.quantity,
-        taxRate: item.taxRate
+        quantity: item.quantity
       })),
-      dueDate: validatedData.dueDate ? new Date(validatedData.dueDate) : undefined,
-      metadata: {
-        userId: user.id,
-        createdBy: 'api',
-        subtotal: subtotal.toString(),
-        totalTax: totalTax.toString(),
-        total: total.toString(),
-        ...validatedData.metadata
-      },
-      autoAdvanceEnabled: validatedData.autoAdvanceEnabled,
-      collectionMethod: validatedData.collectionMethod
-    });
+      {
+        dueDate: validatedData.dueDate ? new Date(validatedData.dueDate) : undefined,
+        metadata: {
+          userId: user.id,
+          createdBy: 'api',
+          subtotal: subtotal.toString(),
+          totalTax: totalTax.toString(),
+          total: total.toString(),
+          ...validatedData.metadata
+        },
+        autoAdvance: validatedData.autoAdvanceEnabled
+      }
+    );
 
     // Store invoice in database
     const dbInvoice = await prisma.invoice.create({
@@ -119,7 +119,7 @@ export async function POST(request: NextRequest) {
         amountPaid: invoice.amount_paid,
         subtotal: invoice.subtotal,
         total: invoice.total,
-        tax: invoice.tax || 0,
+        tax: (invoice as any).tax || 0,
         currency: invoice.currency,
         dueDate: invoice.due_date ? new Date(invoice.due_date * 1000) : null,
         paidAt: invoice.status_transitions?.paid_at ? new Date(invoice.status_transitions.paid_at * 1000) : null,
@@ -152,7 +152,7 @@ export async function POST(request: NextRequest) {
         dueDate: invoice.due_date,
         hostedInvoiceUrl: invoice.hosted_invoice_url,
         invoicePdf: invoice.invoice_pdf,
-        paymentIntent: invoice.payment_intent,
+        paymentIntent: (invoice as any).payment_intent,
         items: invoiceItems,
         taxBreakdown: {
           subtotal,
@@ -264,7 +264,7 @@ export async function GET(request: NextRequest) {
     });
 
     // Create a map for quick lookup
-    const dbInvoiceMap = new Map(dbInvoices.map(inv => [inv.stripeInvoiceId, inv]));
+    const dbInvoiceMap = new Map(dbInvoices.map((inv: any) => [inv.stripeInvoiceId, inv]));
 
     // Format invoices for response
     const formattedInvoices = stripeInvoices.data.map(invoice => {
@@ -288,7 +288,7 @@ export async function GET(request: NextRequest) {
         amountRemaining: invoice.amount_remaining,
         subtotal: invoice.subtotal,
         total: invoice.total,
-        tax: invoice.tax,
+        tax: (invoice as any).tax,
         currency: invoice.currency,
         created: invoice.created,
         dueDate: invoice.due_date,
@@ -317,9 +317,9 @@ export async function GET(request: NextRequest) {
           taxRates: (line as any).tax_rates
         })) || [],
         // Database-specific fields
-        dbId: dbInvoice?.id,
-        dbCreatedAt: dbInvoice?.createdAt,
-        dbUpdatedAt: dbInvoice?.updatedAt,
+        dbId: (dbInvoice as any)?.id,
+        dbCreatedAt: (dbInvoice as any)?.createdAt,
+        dbUpdatedAt: (dbInvoice as any)?.updatedAt,
         failedPaymentCount: (dbInvoice as any)?.failedPaymentCount || 0,
         lastFailedPaymentDate: (dbInvoice as any)?.lastFailedPaymentDate
       };

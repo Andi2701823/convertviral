@@ -402,8 +402,8 @@ export class RateLimiter {
       
       // Get current usage
       const currentUsage = await redis.zCard(key);
-      const totalUsed = await redis.zRange(key, 0, -1, { withScores: true });
-      const usedAmount = totalUsed.reduce((sum, item) => sum + (item.score || 0), 0);
+      const totalUsed = await redis.zRangeWithScores(key, 0, -1);
+      const usedAmount = totalUsed.reduce((sum, item) => sum + item.score, 0);
 
       // Check burst limit if configured
       if (config.burstLimit) {
@@ -479,8 +479,8 @@ export class RateLimiter {
       await redis.zRemRangeByScore(key, 0, windowStart);
       
       // Get current usage
-      const totalUsed = await redis.zRange(key, 0, -1, { withScores: true });
-      const usedAmount = totalUsed.reduce((sum, item) => sum + (item.score || 0), 0);
+      const totalUsed = await redis.zRangeWithScores(key, 0, -1);
+      const usedAmount = totalUsed.reduce((sum, item) => sum + item.score, 0);
 
       return {
         used: usedAmount,

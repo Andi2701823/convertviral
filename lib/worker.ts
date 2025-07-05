@@ -1,5 +1,7 @@
 import { getRedisClient } from './redis';
 import { convertFile, ConversionJob, ConversionResult, cleanupOldConversions, ConversionStatus } from './conversion';
+import { scanForViruses } from './security';
+import { uploadToCDN } from './cdn';
 
 // Extended ConversionJob interface with additional properties used in worker
 interface ExtendedConversionJob extends ConversionJob {
@@ -8,8 +10,6 @@ interface ExtendedConversionJob extends ConversionJob {
   error?: string;
   sourceFilePath?: string;
 }
-import { scanFileForViruses } from './security';
-import { uploadToCDN } from './cdn';
 
 // Extended ConversionResult interface with additional properties used in worker
 interface ExtendedConversionResult extends ConversionResult {
@@ -222,7 +222,7 @@ export async function processJob(workerId: string, jobId: string): Promise<Exten
     });
     
     // Scan file for viruses
-    const scanResult = await scanFileForViruses(job.sourceFile);
+    const scanResult = await scanForViruses(job.sourceFile);
     
     if (!scanResult.isClean) {
       // Update job status to failed

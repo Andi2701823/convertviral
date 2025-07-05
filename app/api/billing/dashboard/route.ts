@@ -129,8 +129,8 @@ export async function GET(request: NextRequest) {
         currency: price?.currency,
         interval: price?.recurring?.interval,
         intervalCount: price?.recurring?.interval_count,
-        currentPeriodStart: new Date(stripeSub.current_period_start * 1000),
-        currentPeriodEnd: new Date(stripeSub.current_period_end * 1000),
+        currentPeriodStart: new Date((stripeSub as any).current_period_start * 1000),
+        currentPeriodEnd: new Date((stripeSub as any).current_period_end * 1000),
         cancelAtPeriodEnd: stripeSub.cancel_at_period_end,
         canceledAt: stripeSub.canceled_at ? new Date(stripeSub.canceled_at * 1000) : null,
         trialEnd: stripeSub.trial_end ? new Date(stripeSub.trial_end * 1000) : null,
@@ -150,9 +150,9 @@ export async function GET(request: NextRequest) {
         
         // Set next billing date
         if (!dashboardData.billing.nextBillingDate || 
-            stripeSub.current_period_end < dashboardData.billing.nextBillingDate) {
-          dashboardData.billing.nextBillingDate = new Date(stripeSub.current_period_end * 1000);
-          dashboardData.billing.currentPeriodEnd = new Date(stripeSub.current_period_end * 1000);
+            (stripeSub as any).current_period_end < dashboardData.billing.nextBillingDate) {
+          dashboardData.billing.nextBillingDate = new Date((stripeSub as any).current_period_end * 1000);
+          dashboardData.billing.currentPeriodEnd = new Date((stripeSub as any).current_period_end * 1000);
         }
       }
     }
@@ -177,23 +177,23 @@ export async function GET(request: NextRequest) {
           amountPaid: stripeInv.amount_paid,
           subtotal: stripeInv.subtotal,
           total: stripeInv.total,
-          tax: stripeInv.tax,
+          tax: (stripeInv as any).tax,
           currency: stripeInv.currency,
           created: new Date(stripeInv.created * 1000),
           dueDate: stripeInv.due_date ? new Date(stripeInv.due_date * 1000) : null,
           paidAt: stripeInv.status_transitions?.paid_at ? new Date(stripeInv.status_transitions.paid_at * 1000) : null,
           hostedInvoiceUrl: stripeInv.hosted_invoice_url,
           invoicePdf: stripeInv.invoice_pdf,
-          subscription: stripeInv.subscription,
-          paymentIntent: stripeInv.payment_intent,
+          subscription: (stripeInv as any).subscription,
+          paymentIntent: (stripeInv as any).payment_intent,
           attemptCount: stripeInv.attempt_count,
           nextPaymentAttempt: stripeInv.next_payment_attempt ? new Date(stripeInv.next_payment_attempt * 1000) : null,
           taxBreakdown: {
             subtotal: stripeInv.subtotal || 0,
-            tax: stripeInv.tax || 0,
+            tax: (stripeInv as any).tax || 0,
             total: stripeInv.total || 0,
-            taxRate: stripeInv.tax && stripeInv.subtotal ? 
-              ((stripeInv.tax / stripeInv.subtotal) * 100).toFixed(2) + '%' : '0%'
+            taxRate: (stripeInv as any).tax && stripeInv.subtotal ? 
+              (((stripeInv as any).tax / stripeInv.subtotal) * 100).toFixed(2) + '%' : '0%'
           }
         };
         
@@ -434,7 +434,7 @@ export async function POST(request: NextRequest) {
       if (activeSubscriptions.data.length > 0) {
         const subscription = activeSubscriptions.data[0];
         summary.hasActiveSubscription = true;
-        summary.nextBillingDate = new Date(subscription.current_period_end * 1000);
+        (summary as any).nextBillingDate = new Date((subscription as any).current_period_end * 1000);
         
         // Get price for billing amount
         const price = subscription.items.data[0]?.price;

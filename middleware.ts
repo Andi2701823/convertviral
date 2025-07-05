@@ -244,8 +244,8 @@ export async function middleware(request: NextRequest) {
     const response = NextResponse.next();
     
     // Add rate limit headers
-    const rateLimit = userPlan === 'free' ? '100' : userPlan === 'premium' ? '1000' : '10000';
-    response.headers.set('X-RateLimit-Limit', rateLimit);
+    const rateLimitValue = userPlan === 'free' ? '100' : userPlan === 'premium' ? '1000' : '10000';
+    response.headers.set('X-RateLimit-Limit', rateLimitValue);
     response.headers.set('X-RateLimit-Remaining', remaining.toString());
     response.headers.set('X-RateLimit-Reset', resetTime.toString());
     
