@@ -1,23 +1,19 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
-import { Link } from '../navigation';
-import { useLocale } from 'next-intl';
+import Link from 'next/link';
 
 export default function LegalFooter() {
-  const t = useTranslations('footer');
-  const locale = useLocale();
   const currentYear = new Date().getFullYear();
   
-  // Determine which legal links to show based on locale
-  const isGerman = locale === 'de';
+  // Since i18n is removed, we'll default to English
+  const isGerman = false;
   
   return (
     <footer className="bg-gray-100 py-4 mt-auto">
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row justify-between items-center text-sm text-gray-600">
           <div className="mb-4 md:mb-0">
-            © {currentYear} ConvertViral. {t('copyright')}
+            © {currentYear} ConvertViral. All rights reserved.
           </div>
           <div className="flex flex-wrap justify-center gap-x-6 gap-y-2">
             {isGerman ? (
@@ -37,13 +33,13 @@ export default function LegalFooter() {
               // International legal links
               <>
                 <Link href="/about" className="hover:text-primary-600 transition-colors">
-                  {t('about_us')}
+                  About Us
                 </Link>
                 <Link href="/privacy" className="hover:text-primary-600 transition-colors">
-                  {t('privacy_policy')}
+                  Privacy Policy
                 </Link>
                 <Link href="/terms" className="hover:text-primary-600 transition-colors">
-                  {t('terms_of_service')}
+                  Terms of Service
                 </Link>
               </>
             )}
@@ -51,7 +47,7 @@ export default function LegalFooter() {
               {isGerman ? 'Cookie-Richtlinie' : 'Cookie Policy'}
             </Link>
             <Link href="/contact" className="hover:text-primary-600 transition-colors">
-              {t('contact_us')}
+              Contact Us
             </Link>
           </div>
         </div>

@@ -20,13 +20,6 @@ interface GtagEvent {
   item_name: string;
 }
 
-// Add type definition for window.gtag
-declare global {
-  interface Window {
-    gtag?: (event: string, action: string, params: GtagEvent) => void;
-  }
-}
-
 export default function PricingSection() { 
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly'); 
 

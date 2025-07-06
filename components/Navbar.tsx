@@ -1,23 +1,21 @@
 'use client';
 
 import { useState } from 'react';
-import { Link, usePathname, useRouter } from '../navigation';
+import Link from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { useLocale, useTranslations } from 'next-intl';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
-  const locale = useLocale();
-  const t = useTranslations('navigation');
 
   const navLinks = [
-    { name: t('home'), href: '/' },
-    { name: t('convert'), href: '/convert' },
-    { name: t('features'), href: '/features' },
-    { name: t('pricing'), href: '/pricing' },
-    { name: t('about'), href: '/about' },
+    { name: 'Home', href: '/' },
+    { name: 'Convert', href: '/convert' },
+    { name: 'Features', href: '/features' },
+    { name: 'Pricing', href: '/pricing' },
+    { name: 'About', href: '/about' },
   ];
 
   // English-only site, no locale switching needed
@@ -53,13 +51,13 @@ const Navbar = () => {
               href="/login"
               className="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium"
             >
-              {t('login')}
+              Login
             </Link>
             <Link
               href="/signup"
               className="ml-4 btn-primary"
             >
-              {t('signup')}
+              Sign Up
             </Link>
           </div>
           <div className="-mr-2 flex items-center sm:hidden">
@@ -132,13 +130,13 @@ const Navbar = () => {
                 href="/login"
                 className="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100"
               >
-                {t('login')}
+                Login
               </Link>
               <Link
                 href="/signup"
                 className="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100"
               >
-                {t('signup')}
+                Sign Up
               </Link>
             </div>
           </div>
