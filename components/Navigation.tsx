@@ -1,30 +1,21 @@
 'use client';
 
 import { useState } from 'react';
-import { Link, usePathname, useRouter } from '../navigation';
+import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { useLocale, useTranslations } from 'next-intl';
 
-const Navbar = () => {
+const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const pathname = usePathname();
-  const router = useRouter();
-  const locale = useLocale();
-  const t = useTranslations('navigation');
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
+  // Navigation links with hardcoded English text
   const navLinks = [
-    { name: t('home'), href: '/' },
-    { name: t('convert'), href: '/convert' },
-    { name: t('features'), href: '/features' },
-    { name: t('pricing'), href: '/pricing' },
-    { name: t('about'), href: '/about' },
+    { name: 'Home', href: '/' },
+    { name: 'Convert', href: '/convert' },
+    { name: 'Features', href: '/features' },
+    { name: 'Pricing', href: '/pricing' },
+    { name: 'About', href: '/about' },
   ];
-
-  // English-only site, no locale switching needed
-
-  const isActive = (path: string) => {
-    return pathname === path;
-  };
 
   return (
     <nav className="bg-white shadow-sm">
@@ -41,7 +32,7 @@ const Navbar = () => {
                 <Link
                   key={link.name}
                   href={link.href}
-                  className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${isActive(link.href) ? 'border-primary-500 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'}`}
+                  className="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700"
                 >
                   {link.name}
                 </Link>
@@ -53,13 +44,13 @@ const Navbar = () => {
               href="/login"
               className="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium"
             >
-              {t('login')}
+              Login
             </Link>
             <Link
               href="/signup"
-              className="ml-4 btn-primary"
+              className="ml-4 bg-primary-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-primary-700 transition-colors"
             >
-              {t('signup')}
+              Sign Up
             </Link>
           </div>
           <div className="-mr-2 flex items-center sm:hidden">
@@ -120,7 +111,7 @@ const Navbar = () => {
               <Link
                 key={link.name}
                 href={link.href}
-                className={`block pl-3 pr-4 py-2 border-l-4 text-base font-medium ${isActive(link.href) ? 'bg-primary-50 border-primary-500 text-primary-700' : 'border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700'}`}
+                className="block pl-3 pr-4 py-2 border-l-4 text-base font-medium border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700"
               >
                 {link.name}
               </Link>
@@ -132,13 +123,13 @@ const Navbar = () => {
                 href="/login"
                 className="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100"
               >
-                {t('login')}
+                Login
               </Link>
               <Link
                 href="/signup"
                 className="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100"
               >
-                {t('signup')}
+                Sign Up
               </Link>
             </div>
           </div>
@@ -148,4 +139,4 @@ const Navbar = () => {
   );
 };
 
-export default Navbar;
+export default Navigation;

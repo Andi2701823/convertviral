@@ -1,8 +1,67 @@
 {
+  "homepage": {
+    "hero_title": "Convert Any File Format with Ease",
+    "hero_subtitle": "Join over {userCount} users who have converted {fileCount} files with our fast, secure, and reliable platform.",
+    "upload_button": "Upload & Convert Now",
+    "why_choose_us": "Why Choose Us",
+    "fast_conversion": "Fast Conversion",
+    "secure_processing": "Secure Processing",
+    "free_to_use": "Free to Use",
+    "convert_now": "Convert Now",
+    "secure_files_notice": "Your files are secure and deleted after 24 hours",
+    "free_tag": "100% FREE",
+    "why_choose_us_desc": "We offer the best file conversion experience with top-notch security and lightning-fast processing.",
+    "fast_conversion_desc": "Our advanced algorithms ensure your files are converted quickly without quality loss.",
+    "secure_processing_desc": "Your files are encrypted and automatically deleted after 24 hours.",
+    "earn_rewards": "Earn Rewards",
+    "earn_rewards_desc": "Convert files and earn points to unlock premium features and special offers.",
+    "convert_up_to_500mb": "Convert files up to 500MB",
+    "batch_processing": "Batch processing available",
+    "end_to_end_encryption": "End-to-end encryption",
+    "gdpr_compliant": "GDPR compliant",
+    "earn_badges": "Earn badges and achievements",
+    "unlock_premium": "Unlock premium features",
+    "explore_all_features": "Explore All Features",
+    "popular_conversions_title": "Popular Conversions",
+    "popular_conversions_desc": "Check out our most popular file conversion options",
+    "convert_any_file_type": "Convert Any File Type",
+    "convert_any_file_type_desc": "Support for over 100+ file formats with high-quality conversion results",
+    "view_all_supported_formats": "View All Supported Formats",
+    "ready_to_transform": "Ready to Transform Your Files?",
+    "join_satisfied_users": "Join over 50,000 satisfied users who trust ConvertViral for fast, secure, and high-quality file conversions.",
+    "no_software_install": "No software to install - works in your browser",
+    "convert_multiple_files": "Convert up to 10 files simultaneously",
+    "earn_points_unlock": "Earn points and unlock premium features",
+    "start_converting_now": "Start Converting Now",
+    "create_free_account": "Create Free Account",
+    "upload_text": "Drag & drop your files here",
+    "or_text": "or",
+    "supported_formats": "Supported formats",
+    "multiple_formats": "200+ Formats",
+    "multiple_formats_desc": "Support for all major file formats and types"
+  },
   "about": {
     "title": "About ConvertViral",
     "subtitle": "Convert any file format with ease. Fast, secure, and reliable.",
-    "description": "ConvertViral is your all-in-one file conversion platform, supporting 100+ formats with real-time progress, batch processing, and legal compliance."
+    "description": "ConvertViral is your all-in-one file conversion platform, supporting 100+ formats with real-time progress, batch processing, and legal compliance.",
+    "story_title": "Our Story",
+    "story_paragraph1": "ConvertViral started with a simple idea: to make file conversions effortless and accessible for everyone. We noticed a gap in the market for a reliable, fast, and secure online converter that could handle a wide range of formats without compromising on quality or user privacy. Our journey began in 2020, fueled by a passion for technology and a commitment to solving everyday digital challenges.",
+    "story_paragraph2": "From a small team of dedicated developers, we've grown into a global platform trusted by millions. We continuously innovate, adding new features and improving our conversion algorithms to ensure you get the best results every time. Our focus remains on providing a seamless user experience, whether you're converting documents, images, audio, or video files.",
+    "mission_title": "Our Mission",
+    "mission_paragraph1": "Our mission is to empower individuals and businesses by simplifying digital workflows. We believe that technology should be a tool for creation and efficiency, not a barrier. By offering a free, intuitive, and powerful conversion service, we aim to save you time and effort, allowing you to focus on what truly matters.",
+    "mission_paragraph2": "We are committed to continuous improvement, user privacy, and environmental responsibility. We strive to build a sustainable service that not only meets your current needs but also anticipates future demands, all while maintaining the highest standards of data security and operational efficiency.",
+    "cta_section_title": "Ready to Experience Effortless Conversions?",
+    "cta_section_description": "Join millions of satisfied users who trust ConvertViral for their daily conversion needs. Fast, secure, and incredibly easy to use.",
+    "cta_button_text": "Start Converting Now"
+  },
+  "navigation": {
+    "home": "Home",
+    "convert": "Convert",
+    "features": "Features",
+    "pricing": "Pricing",
+    "about": "About",
+    "login": "Login",
+    "signup": "Sign Up"
   },
   "footer": {
     "impressum": "Impressum",
@@ -10,14 +69,195 @@
     "terms": "Terms of Service",
     "cookies": "Cookie Policy",
     "agb": "AGB",
-    "datenschutz": "Datenschutzerklärung"
+    "datenschutz": "Datenschutzerklärung",
+    "about_us": "About Us",
+    "subscribe_button": "Subscribe",
+    "email_placeholder": "Your email address",
+    "newsletter_prompt": "Subscribe to our newsletter",
+    "stay_updated": "Stay updated with our latest news",
+    "blog": "Blog",
+    "faq": "FAQ",
+    "contact_us": "Contact Us",
+    "pricing": "Pricing",
+    "features": "Features",
+    "company": "Company",
+    "popular_conversions": "Popular Conversions",
+    "pdf_to_word": "PDF to Word",
+    "jpg_to_pdf": "JPG to PDF",
+    "mp4_to_mp3": "MP4 to MP3",
+    "word_to_pdf": "Word to PDF",
+    "png_to_jpg": "PNG to JPG",
+    "view_all_conversions": "View All Conversions",
+    "description": "Fast, secure, and free online file conversion. Convert PDF, images, audio, video instantly.",
+    "subscribe_success": "Thank you for subscribing!"
   },
   "not_found": {
     "title": "Page Not Found",
     "description": "Sorry, the page you are looking for does not exist.",
-    "back_home": "Back to Home"
+    "back_home": "Back to Home",
+    "help_text": {
+      "prefix": "You can",
+      "faq": "Check our FAQ for more information",
+      "contact": "Contact us if you need help",
+      "or": "or"
+    },
+    "buttons": {
+      "convert_files": "Convert Files",
+      "go_home": "Go Home"
+    }
   },
   "loading": {
     "loading": "Loading... Please wait."
+  },
+  "features": {
+    "hero": {
+      "title": "Powerful Features for All Your Conversion Needs",
+      "description": "Discover the tools and features that make ConvertViral the most versatile file conversion platform available.",
+      "cta_button": "Try It Now"
+    },
+    "main_features": {
+      "title": "Core Features",
+      "description": "Everything you need for seamless file conversion",
+      "feature_1_title": "Batch Conversion",
+      "feature_1_description": "Convert multiple files simultaneously to save time",
+      "feature_2_title": "Cloud Storage Integration",
+      "feature_2_description": "Import files directly from Google Drive, Dropbox, and OneDrive",
+      "feature_3_title": "Advanced Compression",
+      "feature_3_description": "Reduce file sizes without losing quality",
+      "feature_4_title": "Custom Presets",
+      "feature_4_description": "Save your conversion settings for future use",
+      "feature_5_title": "Conversion History",
+      "feature_5_description": "Access your previously converted files anytime",
+      "feature_6_title": "Format Preview",
+      "feature_6_description": "Preview files before and after conversion"
+    },
+    "file_formats": {
+      "title": "Supported File Formats",
+      "description": "We support over 200 file formats across multiple categories",
+      "cta_button": "View All Formats",
+      "category_1_title": "Documents",
+      "category_1_description": "PDF, DOCX, XLSX, PPTX, TXT, RTF, and more",
+      "category_2_title": "Images",
+      "category_2_description": "JPG, PNG, GIF, BMP, TIFF, SVG, WebP, and more",
+      "category_3_title": "Audio",
+      "category_3_description": "MP3, WAV, FLAC, AAC, OGG, WMA, and more",
+      "category_4_title": "Video",
+      "category_4_description": "MP4, AVI, MOV, WMV, MKV, WebM, and more",
+      "category_5_title": "Archives",
+      "category_5_description": "ZIP, RAR, 7Z, TAR, GZ, and more",
+      "category_6_title": "eBooks",
+      "category_6_description": "EPUB, MOBI, AZW, FB2, and more"
+    },
+    "gamification": {
+      "title": "Gamified Conversion Experience",
+      "description": "Make file conversion fun with points, badges, and challenges",
+      "feature_1": "Earn points for every conversion",
+      "feature_2": "Complete daily and weekly challenges",
+      "feature_3": "Unlock badges as you reach milestones",
+      "feature_4": "Compete on the global leaderboard",
+      "view_badges": "View Available Badges",
+      "badge_example_title": "Conversion Master",
+      "badge_example_description": "Convert 100 files in a single day",
+      "badge_example_level": "Level 3 Badge"
+    },
+    "cta": {
+      "title": "Ready to Start Converting?",
+      "description": "Join thousands of users who trust ConvertViral for their file conversion needs.",
+      "convert_button": "Start Converting",
+      "signup_button": "Create Free Account"
+    }
+  },
+  "pricing": {
+    "hero": {
+      "title": "Simple, Transparent Pricing",
+      "description": "Choose the plan that fits your needs. No hidden fees, no surprises.",
+      "cta_button": "Get Started"
+    },
+    "free_plan": {
+      "title": "Free",
+      "description": "Perfect for occasional use",
+      "price": "$0",
+      "period": "forever",
+      "cta_button": "Start Free",
+      "features": [
+        "Convert up to 5 files per day",
+        "Maximum file size: 100MB",
+        "Basic conversion options",
+        "Standard conversion speed",
+        "Email support"
+      ]
+    },
+    "pro_plan": {
+      "title": "Pro",
+      "description": "Ideal for regular users",
+      "price": "$9.99",
+      "period": "per month",
+      "cta_button": "Go Pro",
+      "features": [
+        "Unlimited conversions",
+        "Maximum file size: 500MB",
+        "Advanced conversion options",
+        "Priority conversion speed",
+        "Priority email support",
+        "Batch processing",
+        "No ads"
+      ]
+    },
+    "business_plan": {
+      "title": "Business",
+      "description": "For teams and businesses",
+      "price": "$29.99",
+      "period": "per month",
+      "cta_button": "Choose Business",
+      "features": [
+        "Everything in Pro",
+        "Maximum file size: 2GB",
+        "Team management",
+        "API access",
+        "Dedicated support",
+        "Custom branding options",
+        "Advanced security features"
+      ]
+    },
+    "comparison": {
+      "title": "Plan Comparison",
+      "feature_categories": {
+        "basic": "Basic Features",
+        "advanced": "Advanced Features",
+        "support": "Support"
+      },
+      "features": {
+        "file_limit": "File Limit",
+        "file_size": "Max File Size",
+        "conversion_speed": "Conversion Speed",
+        "batch_processing": "Batch Processing",
+        "advanced_options": "Advanced Options",
+        "api_access": "API Access",
+        "team_management": "Team Management",
+        "email_support": "Email Support",
+        "priority_support": "Priority Support",
+        "dedicated_support": "Dedicated Support"
+      }
+    },
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "questions": {
+        "q1": "Can I upgrade or downgrade my plan at any time?",
+        "a1": "Yes, you can upgrade or downgrade your plan at any time. Changes will take effect at the start of your next billing cycle.",
+        "q2": "Do you offer refunds?",
+        "a2": "We offer a 14-day money-back guarantee for all paid plans. If you're not satisfied with our service, contact our support team within 14 days of your purchase for a full refund.",
+        "q3": "What payment methods do you accept?",
+        "a3": "We accept all major credit cards, PayPal, and Apple Pay. For Business plans, we also offer invoice payment options.",
+        "q4": "Is my payment information secure?",
+        "a4": "Yes, all payment processing is handled securely through Stripe. We never store your full credit card details on our servers.",
+        "q5": "Do you offer discounts for annual subscriptions?",
+        "a5": "Yes, you can save 20% by choosing annual billing for any of our paid plans."
+      }
+    },
+    "cta_section": {
+      "title": "Ready to Get Started?",
+      "description": "Join thousands of satisfied users who trust ConvertViral for their file conversion needs.",
+      "button": "Choose Your Plan"
+    }
   }
 }

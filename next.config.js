@@ -21,7 +21,4 @@ const nextConfig = {
   distDir: '.next',
 };
 
-// For next-intl v4.x
-const withNextIntl = require('next-intl/plugin')('./i18n/request.ts');
-
-module.exports = withNextIntl(withPWA(nextConfig));
+module.exports = withPWA(nextConfig);

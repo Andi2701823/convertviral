@@ -22,16 +22,9 @@ export default function HreflangTags({ path, languages }: HreflangTagsProps) {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://convertviral.com';
   const currentPath = path || pathname;
   
-  // Default supported languages
+  // Only English is supported
   const defaultLanguages = [
     { code: 'en', url: '' },      // English (default)
-    { code: 'es', url: '/es' },   // Spanish
-    { code: 'fr', url: '/fr' },   // French
-    { code: 'de', url: '/de' },   // German
-    { code: 'it', url: '/it' },   // Italian
-    { code: 'pt', url: '/pt' },   // Portuguese
-    { code: 'ja', url: '/ja' },   // Japanese
-    { code: 'zh', url: '/zh' },   // Chinese
   ];
   
   const supportedLanguages = languages || defaultLanguages;

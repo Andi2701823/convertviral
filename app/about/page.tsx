@@ -1,22 +1,18 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
-import { Link } from '../../navigation';
-import { ArrowRightIcon, CheckIcon } from '@/components/Icons';
-
-
+import Image from 'next/image';
+import Link from 'next/link';
 
 export default function AboutPage() {
-  const t = useTranslations('about');
   return (
     <div className="flex-grow">
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-primary-600 to-primary-800 text-white py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">{t('title')}</h1>
+            <h1 className="text-4xl md:text-5xl font-bold mb-6">About ConvertViral</h1>
             <p className="text-xl mb-8 text-white text-opacity-90 max-w-3xl mx-auto">
-              {t('subtitle')}
+              Your trusted partner for fast, secure, and easy file conversions
             </p>
           </div>
         </div>
@@ -27,12 +23,12 @@ export default function AboutPage() {
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 className="text-3xl font-bold mb-6">{t('story_title')}</h2>
+              <h2 className="text-3xl font-bold mb-6">Our Story</h2>
               <p className="text-lg text-gray-600 mb-6">
-                {t('story_paragraph1')}
+                ConvertViral was born from a simple frustration: converting files online was either too complicated, too expensive, or too risky for your data privacy. We believed there had to be a better way to provide this essential service to everyone.  
               </p>
               <p className="text-lg text-gray-600 mb-6">
-                {t('story_paragraph2')}
+                Founded by a team of developers and digital content creators, we set out to build the most user-friendly, secure, and efficient file conversion platform on the web. Today, we're proud to serve millions of users worldwide with our growing suite of conversion tools.
               </p>
             </div>
             <div className="relative">
@@ -43,8 +39,8 @@ export default function AboutPage() {
                   <div className="flex items-center justify-center h-full bg-primary-50 p-8">
                     <div className="text-center">
                       <div className="text-6xl mb-4">🚀</div>
-                      <div className="text-2xl font-bold text-primary-600">{t('idea_to_reality')}</div>
-                      <p className="text-gray-600 mt-2">{t('launched_in_2023')}</p>
+                      <div className="text-2xl font-bold text-primary-600">From Idea to Reality</div>
+                      <p className="text-gray-600 mt-2">Launched in 2023</p>
                     </div>
                   </div>
                 </div>
@@ -58,12 +54,12 @@ export default function AboutPage() {
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">{t('mission_title')}</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Our Mission</h2>
             <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-              {t('mission_paragraph1')}
+              We believe that file conversion should be accessible to everyone, regardless of technical expertise or budget constraints. Our mission is to break down digital barriers by providing the most intuitive file conversion experience on the web.
             </p>
             <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-              {t('mission_paragraph2')}
+              Every feature we build is guided by our core values: speed, privacy, and user satisfaction. We're committed to continuous improvement and innovation to meet the evolving needs of our global user base.
             </p>
           </div>
           
@@ -74,8 +70,8 @@ export default function AboutPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
               </div>
-              <h3 className="text-xl font-bold mb-3 text-gray-900">{t('speed_title')}</h3>
-              <p className="text-gray-600">{t('speed_desc')}</p>
+              <h3 className="text-xl font-bold mb-3 text-gray-900">Lightning Fast</h3>
+              <p className="text-gray-600">Our optimized conversion engines process your files in seconds, not minutes. We've built our infrastructure to handle high volumes with minimal wait times.</p>
             </div>
             
             <div className="bg-white p-8 rounded-xl shadow-lg border border-gray-100 transition-transform duration-300 hover:transform hover:scale-105">
@@ -84,8 +80,8 @@ export default function AboutPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                 </svg>
               </div>
-              <h3 className="text-xl font-bold mb-3 text-gray-900">{t('privacy_title')}</h3>
-              <p className="text-gray-600">{t('privacy_desc')}</p>
+              <h3 className="text-xl font-bold mb-3 text-gray-900">Privacy First</h3>
+              <p className="text-gray-600">Your files are yours alone. We use end-to-end encryption, automatic file deletion after 24 hours, and never access your content for any purpose other than conversion.</p>
             </div>
             
             <div className="bg-white p-8 rounded-xl shadow-lg border border-gray-100 transition-transform duration-300 hover:transform hover:scale-105">
@@ -94,8 +90,8 @@ export default function AboutPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              <h3 className="text-xl font-bold mb-3 text-gray-900">{t('fun_title')}</h3>
-              <p className="text-gray-600">{t('fun_desc')}</p>
+              <h3 className="text-xl font-bold mb-3 text-gray-900">Enjoyable Experience</h3>
+              <p className="text-gray-600">We've gamified the conversion process with rewards, badges, and a user-friendly interface that makes file conversion surprisingly fun and engaging.</p>
             </div>
           </div>
         </div>
@@ -105,9 +101,9 @@ export default function AboutPage() {
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">{t('team_title')}</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Meet Our Team</h2>
             <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-              {t('team_subtitle')}
+              The passionate individuals behind ConvertViral who are dedicated to making file conversion accessible, secure, and enjoyable for everyone.  
             </p>
           </div>
           
@@ -116,9 +112,9 @@ export default function AboutPage() {
             <div className="bg-white rounded-xl shadow-md overflow-hidden">
               <div className="p-6">
                 <div className="h-32 w-32 rounded-full bg-gray-200 mx-auto mb-4"></div>
-                <h3 className="text-xl font-bold text-center mb-1">{t('team_member1_name')}</h3>
-                <p className="text-gray-500 text-center mb-3">{t('team_member1_role')}</p>
-                <p className="text-gray-600 text-center text-sm">{t('team_member1_description')}</p>
+                <h3 className="text-xl font-bold text-center mb-1">Alex Johnson</h3>
+                <p className="text-gray-500 text-center mb-3">Founder & CEO</p>
+                <p className="text-gray-600 text-center text-sm">Former Google engineer with a passion for creating tools that simplify digital workflows.</p>
               </div>
             </div>
             
@@ -126,9 +122,9 @@ export default function AboutPage() {
             <div className="bg-white rounded-xl shadow-md overflow-hidden">
               <div className="p-6">
                 <div className="h-32 w-32 rounded-full bg-gray-200 mx-auto mb-4"></div>
-                <h3 className="text-xl font-bold text-center mb-1">{t('team_member2_name')}</h3>
-                <p className="text-gray-500 text-center mb-3">{t('team_member2_role')}</p>
-                <p className="text-gray-600 text-center text-sm">{t('team_member2_description')}</p>
+                <h3 className="text-xl font-bold text-center mb-1">Sarah Chen</h3>
+                <p className="text-gray-500 text-center mb-3">CTO & Lead Developer</p>
+                <p className="text-gray-600 text-center text-sm">Full-stack developer with expertise in cloud architecture and security.</p>
               </div>
             </div>
             
@@ -136,9 +132,9 @@ export default function AboutPage() {
             <div className="bg-white rounded-xl shadow-md overflow-hidden">
               <div className="p-6">
                 <div className="h-32 w-32 rounded-full bg-gray-200 mx-auto mb-4"></div>
-                <h3 className="text-xl font-bold text-center mb-1">{t('team_member3_name')}</h3>
-                <p className="text-gray-500 text-center mb-3">{t('team_member3_role')}</p>
-                <p className="text-gray-600 text-center text-sm">{t('team_member3_description')}</p>
+                <h3 className="text-xl font-bold text-center mb-1">Michael Rodriguez</h3>
+                <p className="text-gray-500 text-center mb-3">Head of User Experience</p>
+                <p className="text-gray-600 text-center text-sm">UX/UI specialist with a background in gamification and product design.</p>
               </div>
             </div>
             
@@ -146,9 +142,9 @@ export default function AboutPage() {
             <div className="bg-white rounded-xl shadow-md overflow-hidden">
               <div className="p-6">
                 <div className="h-32 w-32 rounded-full bg-gray-200 mx-auto mb-4"></div>
-                <h3 className="text-xl font-bold text-center mb-1">{t('team_member4_name')}</h3>
-                <p className="text-gray-500 text-center mb-3">{t('team_member4_role')}</p>
-                <p className="text-gray-600 text-center text-sm">{t('team_member4_description')}</p>
+                <h3 className="text-xl font-bold text-center mb-1">Emma Wilson</h3>
+                <p className="text-gray-500 text-center mb-3">Marketing Director</p>
+                <p className="text-gray-600 text-center text-sm">Digital marketing expert focused on growth strategies and user acquisition.</p>
               </div>
             </div>
           </div>
@@ -158,43 +154,56 @@ export default function AboutPage() {
       {/* Stats Section */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-            <div>
-              <div className="text-4xl font-bold text-primary-600 mb-2">{t('stats_conversions_count')}</div>
-              <p className="text-gray-600">{t('stats_conversions_text')}</p>
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Our Impact By The Numbers</h2>
+            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+              Since our launch, we've helped millions of users transform their files quickly and securely. Here's a snapshot of our journey so far.
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="bg-white p-8 rounded-xl shadow-md border border-gray-100 text-center">
+              <div className="text-4xl font-bold text-primary-600 mb-2">2M+</div>
+              <div className="text-gray-600">Active Users</div>
             </div>
-            <div>
-              <div className="text-4xl font-bold text-primary-600 mb-2">{t('stats_users_count')}</div>
-              <p className="text-gray-600">{t('stats_users_text')}</p>
+            
+            <div className="bg-white p-8 rounded-xl shadow-md border border-gray-100 text-center">
+              <div className="text-4xl font-bold text-primary-600 mb-2">50M+</div>
+              <div className="text-gray-600">Files Converted</div>
             </div>
-            <div>
-              <div className="text-4xl font-bold text-primary-600 mb-2">{t('stats_formats_count')}</div>
-              <p className="text-gray-600">{t('stats_formats_text')}</p>
+            
+            <div className="bg-white p-8 rounded-xl shadow-md border border-gray-100 text-center">
+              <div className="text-4xl font-bold text-primary-600 mb-2">100+</div>
+              <div className="text-gray-600">Supported Formats</div>
+            </div>
+            
+            <div className="bg-white p-8 rounded-xl shadow-md border border-gray-100 text-center">
+              <div className="text-4xl font-bold text-primary-600 mb-2">99.9%</div>
+              <div className="text-gray-600">Service Uptime</div>
             </div>
           </div>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-primary-600 text-white">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-primary-500 to-primary-700 text-white">
         <div className="max-w-7xl mx-auto text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">{t('cta_section_title')}</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to Transform Your Files?</h2>
           <p className="text-xl mb-8 max-w-3xl mx-auto">
-            {t('cta_section_description')}
+            Join millions of satisfied users who trust ConvertViral for fast, secure, and free file conversions. No software to install, no complicated settings—just upload and convert.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <Link 
               href="/convert" 
-              className="inline-flex items-center justify-center bg-white text-primary-600 font-semibold px-6 py-3 rounded-lg shadow-md hover:bg-gray-100 transition-colors duration-300"
+              className="bg-white text-primary-600 hover:bg-gray-100 px-8 py-3 rounded-lg font-medium text-lg transition-colors duration-300"
             >
-              {t('cta_button_text')}
-              <ArrowRightIcon className="ml-2 h-5 w-5" />
+              Start Converting Now
             </Link>
             <Link 
-              href="/contact" 
-              className="inline-flex items-center justify-center bg-transparent text-white font-semibold px-6 py-3 rounded-lg border border-white border-opacity-50 hover:bg-white hover:bg-opacity-10 transition-colors duration-300"
+              href="/signup" 
+              className="bg-transparent hover:bg-primary-600 border-2 border-white px-8 py-3 rounded-lg font-medium text-lg transition-colors duration-300"
             >
-              {t('cta_button2')}
+              Create Free Account
             </Link>
           </div>
         </div>
