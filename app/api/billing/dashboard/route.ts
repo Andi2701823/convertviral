@@ -5,7 +5,7 @@ import { prisma } from '@/lib/db';
 import { stripe, calculateGermanTax } from '@/lib/stripe';
 import { securityLogger } from '@/lib/security';
 import { z } from 'zod';
-import { FEATURE_FLAGS } from '@/lib/feature-flags';
+import { FEATURE_FLAGS } from '@/lib/featureFlags';
 
 // Validation schema for query parameters
 const dashboardQuerySchema = z.object({
