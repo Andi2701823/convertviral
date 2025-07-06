@@ -13,6 +13,7 @@ import {
 } from '@/lib/stripe';
 import { securityLogger } from '@/lib/security';
 import { z } from 'zod';
+import { FEATURE_FLAGS } from '@/lib/featureFlags';
 
 // Validation schemas
 const createSubscriptionSchema = z.object({
@@ -42,6 +43,14 @@ const updateSubscriptionSchema = z.object({
 // Create new subscription
 export async function POST(request: NextRequest) {
   try {
+    // Check if payments are enabled
+    if (!FEATURE_FLAGS.paymentsEnabled) {
+      return NextResponse.json(
+        { error: 'Payments are currently disabled' },
+        { status: 403 }
+      );
+    }
+    
     // Authentication check
     const session = await getServerSession(authOptions);
     if (!session?.user) {
@@ -311,6 +320,14 @@ export async function GET(request: NextRequest) {
 // Update subscription (cancel, reactivate, change plan)
 export async function PATCH(request: NextRequest) {
   try {
+    // Check if payments are enabled
+    if (!FEATURE_FLAGS.paymentsEnabled) {
+      return NextResponse.json(
+        { error: 'Payments are currently disabled' },
+        { status: 403 }
+      );
+    }
+    
     // Authentication check
     const session = await getServerSession(authOptions);
     if (!session?.user) {

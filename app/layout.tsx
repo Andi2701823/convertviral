@@ -10,6 +10,7 @@ import NewFooter from '@/components/NewFooter';
 import AnalyticsProvider from '@/components/AnalyticsProvider';
 import { ConsentType } from '@/types/consent';
 import JsonLd from '@/components/JsonLd';
+import Providers from './providers';
 
 const ServiceWorkerRegistration = dynamic(() => import('@/components/ServiceWorkerRegistration'), { ssr: false });
 const CookieConsent = dynamic(() => import('@/components/CookieConsent'), { ssr: false });
@@ -61,15 +62,17 @@ export default function RootLayout({
       </head>
       <body className={inter.className}>
         <Suspense fallback={<div>Loading...</div>}>
-          <AnalyticsProvider>
-            <Navigation />
-            <main className="min-h-screen">
-              {children}
-            </main>
-            <NewFooter />
-            <ServiceWorkerRegistration />
-            <CookieConsent />
-          </AnalyticsProvider>
+          <Providers>
+            <AnalyticsProvider>
+              <Navigation />
+              <main className="min-h-screen">
+                {children}
+              </main>
+              <NewFooter />
+              <ServiceWorkerRegistration />
+              <CookieConsent />
+            </AnalyticsProvider>
+          </Providers>
         </Suspense>
       </body>
     </html>

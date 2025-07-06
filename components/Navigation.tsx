@@ -3,10 +3,14 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { useSession, signOut } from 'next-auth/react';
+import Image from 'next/image';
 
 const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const { data: session, status } = useSession();
+  const isAuthenticated = status === 'authenticated';
 
   // Navigation links with hardcoded English text
   const navLinks = [
@@ -40,18 +44,70 @@ const Navigation = () => {
             </div>
           </div>
           <div className="hidden sm:ml-6 sm:flex sm:items-center">
-            <Link
-              href="/login"
-              className="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium"
-            >
-              Login
-            </Link>
-            <Link
-              href="/signup"
-              className="ml-4 bg-primary-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-primary-700 transition-colors"
-            >
-              Sign Up
-            </Link>
+            {isAuthenticated ? (
+              <div className="flex items-center">
+                <Link href="/dashboard" className="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium">
+                  Dashboard
+                </Link>
+                <div className="relative ml-3">
+                  <div>
+                    <button
+                      onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                      className="flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+                    >
+                      <span className="sr-only">Open user menu</span>
+                      {session?.user?.image ? (
+                        <Image
+                          className="h-8 w-8 rounded-full"
+                          src={session.user.image}
+                          alt="User profile"
+                          width={32}
+                          height={32}
+                        />
+                      ) : (
+                        <div className="h-8 w-8 rounded-full bg-primary-600 flex items-center justify-center text-white">
+                          {session?.user?.name?.charAt(0) || 'U'}
+                        </div>
+                      )}
+                    </button>
+                  </div>
+                  {isDropdownOpen && (
+                    <div className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-10">
+                      <div className="px-4 py-2 text-xs text-gray-500">
+                        Signed in as <span className="font-medium text-gray-900">{session?.user?.email}</span>
+                      </div>
+                      <Link href="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                        Your Profile
+                      </Link>
+                      <Link href="/settings" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                        Settings
+                      </Link>
+                      <button
+                        onClick={() => signOut({ callbackUrl: '/' })}
+                        className="w-full text-left block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
+                        Sign out
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  className="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium"
+                >
+                  Login
+                </Link>
+                <Link
+                  href="/signup"
+                  className="ml-4 bg-primary-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-primary-700 transition-colors"
+                >
+                  Sign Up
+                </Link>
+              </>
+            )}
           </div>
           <div className="-mr-2 flex items-center sm:hidden">
             <button
@@ -118,20 +174,72 @@ const Navigation = () => {
             ))}
           </div>
           <div className="pt-4 pb-3 border-t border-gray-200">
-            <div className="mt-3 space-y-1">
-              <Link
-                href="/login"
-                className="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100"
-              >
-                Login
-              </Link>
-              <Link
-                href="/signup"
-                className="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100"
-              >
-                Sign Up
-              </Link>
-            </div>
+            {isAuthenticated ? (
+              <div>
+                <div className="flex items-center px-4">
+                  <div className="flex-shrink-0">
+                    {session?.user?.image ? (
+                      <Image
+                        className="h-10 w-10 rounded-full"
+                        src={session.user.image}
+                        alt="User profile"
+                        width={40}
+                        height={40}
+                      />
+                    ) : (
+                      <div className="h-10 w-10 rounded-full bg-primary-600 flex items-center justify-center text-white">
+                        {session?.user?.name?.charAt(0) || 'U'}
+                      </div>
+                    )}
+                  </div>
+                  <div className="ml-3">
+                    <div className="text-base font-medium text-gray-800">{session?.user?.name}</div>
+                    <div className="text-sm font-medium text-gray-500">{session?.user?.email}</div>
+                  </div>
+                </div>
+                <div className="mt-3 space-y-1">
+                  <Link
+                    href="/dashboard"
+                    className="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100"
+                  >
+                    Dashboard
+                  </Link>
+                  <Link
+                    href="/profile"
+                    className="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100"
+                  >
+                    Your Profile
+                  </Link>
+                  <Link
+                    href="/settings"
+                    className="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100"
+                  >
+                    Settings
+                  </Link>
+                  <button
+                    onClick={() => signOut({ callbackUrl: '/' })}
+                    className="w-full text-left block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100"
+                  >
+                    Sign out
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="mt-3 space-y-1">
+                <Link
+                  href="/login"
+                  className="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100"
+                >
+                  Login
+                </Link>
+                <Link
+                  href="/signup"
+                  className="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100"
+                >
+                  Sign Up
+                </Link>
+              </div>
+            )}
           </div>
         </motion.div>
       )}

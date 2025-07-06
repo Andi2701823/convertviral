@@ -6,6 +6,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { z } from 'zod';
 import { captureException } from './monitoring';
 import { createLogger, format, transports } from 'winston';
+import { FEATURE_FLAGS } from './featureFlags';
 
 /**
  * Security logger for tracking security events
@@ -384,6 +385,10 @@ export class RateLimiter {
     userPlan: UserPlan,
     amount: number = 1
   ): Promise<{ allowed: boolean; remaining: number; resetTime: number; error?: string }> {
+    // Skip rate limiting if conversion limits are disabled via feature flags
+    if (FEATURE_FLAGS.conversionLimits === false) {
+      return { allowed: true, remaining: 999999, resetTime: Date.now() + 3600000 };
+    }
     try {
       const redis = await getRedisClient();
       const config = this.RATE_LIMITS[userPlan][action];

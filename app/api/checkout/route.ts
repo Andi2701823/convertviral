@@ -5,6 +5,7 @@ import { prisma } from '@/lib/db';
 import { stripe, createCustomer, calculateGermanTax, stripeConfig } from '@/lib/stripe';
 import { securityLogger } from '@/lib/security';
 import { z } from 'zod';
+import { FEATURE_FLAGS } from '@/lib/featureFlags';
 
 // Validation schemas
 const createCheckoutSchema = z.object({
@@ -45,6 +46,17 @@ const retrieveSessionSchema = z.object({
 
 // Create checkout session
 export async function POST(request: NextRequest) {
+  // Check if payments are enabled
+  if (!FEATURE_FLAGS.paymentsEnabled) {
+    securityLogger.warn('checkout_payments_disabled', {
+      message: 'Payments are currently disabled via feature flags'
+    });
+    return NextResponse.json(
+      { error: 'Payments are currently disabled' },
+      { status: 403 }
+    );
+  }
+  
   try {
     // Parse and validate request body
     const body = await request.json();
@@ -263,6 +275,17 @@ export async function POST(request: NextRequest) {
 
 // Retrieve checkout session
 export async function GET(request: NextRequest) {
+  // Check if payments are enabled
+  if (!FEATURE_FLAGS.paymentsEnabled) {
+    securityLogger.warn('checkout_get_payments_disabled', {
+      message: 'Payments are currently disabled via feature flags'
+    });
+    return NextResponse.json(
+      { error: 'Payments are currently disabled' },
+      { status: 403 }
+    );
+  }
+  
   try {
     // Parse query parameters
     const url = new URL(request.url);
@@ -401,6 +424,17 @@ export async function GET(request: NextRequest) {
 
 // Update checkout session (limited operations)
 export async function PATCH(request: NextRequest) {
+  // Check if payments are enabled
+  if (!FEATURE_FLAGS.paymentsEnabled) {
+    securityLogger.warn('checkout_patch_payments_disabled', {
+      message: 'Payments are currently disabled via feature flags'
+    });
+    return NextResponse.json(
+      { error: 'Payments are currently disabled' },
+      { status: 403 }
+    );
+  }
+  
   try {
     // Authentication check
     const session = await getServerSession(authOptions);

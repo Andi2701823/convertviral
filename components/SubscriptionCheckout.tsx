@@ -11,6 +11,7 @@ import {
   useElements,
 } from '@stripe/react-stripe-js';
 import { stripeConfig } from '@/lib/stripe';
+import { FEATURE_FLAGS } from '@/lib/featureFlags';
 
 // Stripe Promise initialisieren
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
@@ -130,6 +131,13 @@ export default function SubscriptionCheckout({ planType }: SubscriptionCheckoutP
     // Wenn kein Benutzer angemeldet ist, zur Anmeldeseite weiterleiten
     if (!session?.user) {
       router.push('/login?redirect=pricing');
+      return;
+    }
+
+    // Wenn Zahlungen deaktiviert sind, zur Preisübersicht zurückleiten
+    if (!FEATURE_FLAGS.paymentsEnabled) {
+      setError('Zahlungen sind derzeit deaktiviert. Bitte versuchen Sie es später erneut.');
+      setLoading(false);
       return;
     }
 

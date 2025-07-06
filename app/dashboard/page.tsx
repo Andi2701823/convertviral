@@ -1,3 +1,8 @@
+'use client';
+
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 import { Metadata } from 'next';
 import UserProfile from '@/components/UserProfile';
 import ConversionHistory from '@/components/ConversionHistory';
@@ -8,13 +13,22 @@ export const metadata: Metadata = {
 };
 
 export default function DashboardPage() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  
+  useEffect(() => {
+    // Redirect to login if not authenticated
+    if (status === 'unauthenticated') {
+      router.push('/login');
+    }
+  }, [status, router]);
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <h1 className="text-3xl font-bold mb-8">Your Dashboard</h1>
       
       <div className="grid md:grid-cols-3 gap-8">
         <div className="md:col-span-1">
-          <UserProfile />
+          <UserProfile user={session?.user} />
         </div>
         
         <div className="md:col-span-2">

@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { saveUploadedFile, validateFileType, validateFileSize } from '@/lib/upload';
 import { getFileFormatByExtension } from '@/lib/fileTypes';
 import { setCache } from '@/lib/redis';
+import { FEATURE_FLAGS } from '@/lib/featureFlags';
 
 // Size limits in bytes
 const FREE_SIZE_LIMIT = 50 * 1024 * 1024; // 50MB
@@ -83,20 +84,23 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate file size
-    const isPremium = !!userId;
-    try {
-      await validateFileSize(file.size, isPremium);
-    } catch (error) {
-      return NextResponse.json(
-        { 
-          error: 'File size exceeds limit', 
-          limit: userId ? '500MB' : '50MB',
-          upgrade: !userId
-        },
-        { status: 400 }
-      );
+    // Validate file size only if file size limits are enabled
+    if (FEATURE_FLAGS.fileSizeLimits) {
+      const isPremium = !!userId;
+      try {
+        await validateFileSize(file.size, isPremium);
+      } catch (error) {
+        return NextResponse.json(
+          { 
+            error: 'File size exceeds limit', 
+            limit: userId ? '500MB' : '50MB',
+            upgrade: FEATURE_FLAGS.upgradePrompts ? !userId : false
+          },
+          { status: 400 }
+        );
+      }
     }
+    // When file size limits are disabled, all files are allowed
 
     // Save the uploaded file
     const uploadedFile = await saveUploadedFile(file);

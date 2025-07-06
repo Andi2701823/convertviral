@@ -5,6 +5,7 @@ import { prisma } from '@/lib/db';
 import { stripe, createCustomer } from '@/lib/stripe';
 import { securityLogger } from '@/lib/security';
 import { z } from 'zod';
+import { FEATURE_FLAGS } from '@/lib/featureFlags';
 
 // Validation schemas
 const addPaymentMethodSchema = z.object({
@@ -45,6 +46,17 @@ const updatePaymentMethodSchema = z.object({
 
 // Add new payment method
 export async function POST(request: NextRequest) {
+  // Check if payments are enabled
+  if (!FEATURE_FLAGS.paymentsEnabled) {
+    securityLogger.warn('payment_methods_post_disabled', {
+      message: 'Payments are currently disabled via feature flags'
+    });
+    return NextResponse.json(
+      { error: 'Payments are currently disabled' },
+      { status: 403 }
+    );
+  }
+  
   try {
     // Authentication check
     const session = await getServerSession(authOptions);
@@ -190,6 +202,17 @@ export async function POST(request: NextRequest) {
 
 // Get user payment methods
 export async function GET(request: NextRequest) {
+  // Check if payments are enabled
+  if (!FEATURE_FLAGS.paymentsEnabled) {
+    securityLogger.warn('payment_methods_get_disabled', {
+      message: 'Payments are currently disabled via feature flags'
+    });
+    return NextResponse.json(
+      { error: 'Payments are currently disabled' },
+      { status: 403 }
+    );
+  }
+  
   try {
     // Authentication check
     const session = await getServerSession(authOptions);
@@ -306,6 +329,17 @@ export async function GET(request: NextRequest) {
 
 // Update or delete payment method
 export async function PATCH(request: NextRequest) {
+  // Check if payments are enabled
+  if (!FEATURE_FLAGS.paymentsEnabled) {
+    securityLogger.warn('payment_methods_patch_disabled', {
+      message: 'Payments are currently disabled via feature flags'
+    });
+    return NextResponse.json(
+      { error: 'Payments are currently disabled' },
+      { status: 403 }
+    );
+  }
+  
   try {
     // Authentication check
     const session = await getServerSession(authOptions);
@@ -493,6 +527,17 @@ export async function PATCH(request: NextRequest) {
 
 // Delete payment method (alternative endpoint)
 export async function DELETE(request: NextRequest) {
+  // Check if payments are enabled
+  if (!FEATURE_FLAGS.paymentsEnabled) {
+    securityLogger.warn('payment_methods_delete_disabled', {
+      message: 'Payments are currently disabled via feature flags'
+    });
+    return NextResponse.json(
+      { error: 'Payments are currently disabled' },
+      { status: 403 }
+    );
+  }
+  
   try {
     // Authentication check
     const session = await getServerSession(authOptions);

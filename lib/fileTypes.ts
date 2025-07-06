@@ -1,5 +1,6 @@
 import { IconType } from 'react-icons';
 import { FaFileAlt, FaFilePdf, FaFileWord, FaFileExcel, FaFilePowerpoint, FaFileImage, FaFileAudio, FaFileVideo, FaFileArchive, FaFileCode, FaBook } from 'react-icons/fa';
+import { FEATURE_FLAGS } from './featureFlags';
 
 // Define file format type
 export interface FileFormat {
@@ -439,6 +440,11 @@ export async function validateFileType(mimeType: string, extension: string): Pro
  * @returns Promise<void> that resolves if valid, rejects if invalid
  */
 export async function validateFileSize(fileSize: number, isPremium: boolean): Promise<void> {
+  // Skip file size validation if disabled via feature flags
+  if (FEATURE_FLAGS.fileSizeLimits === false) {
+    return Promise.resolve();
+  }
+  
   // Define size limits
   const FREE_SIZE_LIMIT = 50 * 1024 * 1024; // 50MB
   const PREMIUM_SIZE_LIMIT = 500 * 1024 * 1024; // 500MB
@@ -459,6 +465,11 @@ export async function validateFileSize(fileSize: number, isPremium: boolean): Pr
  * @returns Size limit in bytes
  */
 export function getFileSizeLimit(isPremium: boolean): number {
+  // If file size limits are disabled, return a very large number
+  if (FEATURE_FLAGS.fileSizeLimits === false) {
+    return 1024 * 1024 * 1024; // 1GB for everyone when limits are disabled
+  }
+  
   return isPremium ? 500 * 1024 * 1024 : 50 * 1024 * 1024;
 }
 

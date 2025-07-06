@@ -4,6 +4,7 @@ import { prisma } from '@/lib/db';
 import { headers } from 'next/headers';
 import { getRedisClient } from '@/lib/redis';
 import { securityLogger } from '@/lib/security';
+import { FEATURE_FLAGS } from '@/lib/featureFlags';
 
 // Constants for retry logic
 const MAX_WEBHOOK_RETRIES = 3;
@@ -11,6 +12,17 @@ const WEBHOOK_RETRY_DELAY_MS = 2000; // 2 seconds
 
 // Stripe Webhook-Handler with enhanced error handling and retry logic
 export async function POST(request: NextRequest) {
+  // Check if payments are enabled
+  if (!FEATURE_FLAGS.paymentsEnabled) {
+    securityLogger.warn('webhook_payments_disabled', {
+      message: 'Payments are currently disabled via feature flags'
+    });
+    return NextResponse.json(
+      { error: 'Payments are currently disabled' },
+      { status: 403 }
+    );
+  }
+  
   let retryCount = 0;
   let lastError: Error | null = null;
 
