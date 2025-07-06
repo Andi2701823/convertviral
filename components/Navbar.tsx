@@ -32,7 +32,7 @@ const Navbar = () => {
   ];
 
   const handleLocaleChange = (newLocale: string) => {
-    router.push(`/${newLocale}${pathname}`);
+    router.push(pathname, { locale: newLocale });
   };
 
   const isActive = (path: string) => {

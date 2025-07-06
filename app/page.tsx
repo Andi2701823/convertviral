@@ -19,7 +19,7 @@ export default function HomePage() {
                 {t('hero_title')}
               </h1>
               <p className="text-xl mb-8 text-white text-opacity-90">
-                {t('hero_subtitle', { userCount: '10,000+', fileCount: '50,000+' })}
+                {t('hero_subtitle', { userCount: '50,000+', fileCount: '2M+' })}
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link 
@@ -182,6 +182,54 @@ export default function HomePage() {
               {t('explore_all_features')}
               <ArrowRightIcon className="ml-2 h-5 w-5" />
             </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Popular Conversions Section */}
+      <section className="popular-conversions-container">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">{t('popular_conversions_title')}</h2>
+            <p className="text-lg text-gray-600 max-w-3xl mx-auto">{t('popular_conversions_desc')}</p>
+          </div>
+          <div className="popular-conversions-grid">
+            <div className="popular-conversions-card">
+              <div className="p-6 text-center">
+                <h3 className="text-lg font-semibold text-gray-900">HEIC to JPG</h3>
+                <p className="text-sm text-gray-500">iPhone Photos</p>
+              </div>
+            </div>
+            <div className="popular-conversions-card">
+              <div className="p-6 text-center">
+                <h3 className="text-lg font-semibold text-gray-900">Word to PDF</h3>
+                <p className="text-sm text-gray-500">Business Docs</p>
+              </div>
+            </div>
+            <div className="popular-conversions-card">
+              <div className="p-6 text-center">
+                <h3 className="text-lg font-semibold text-gray-900">MP4 to MP3</h3>
+                <p className="text-sm text-gray-500">Video Audio</p>
+              </div>
+            </div>
+            <div className="popular-conversions-card">
+              <div className="p-6 text-center">
+                <h3 className="text-lg font-semibold text-gray-900">MOV to MP4</h3>
+                <p className="text-sm text-gray-500">iPhone Videos</p>
+              </div>
+            </div>
+            <div className="popular-conversions-card">
+              <div className="p-6 text-center">
+                <h3 className="text-lg font-semibold text-gray-900">JPG to WebP</h3>
+                <p className="text-sm text-gray-500">Web Optimization</p>
+              </div>
+            </div>
+            <div className="popular-conversions-card">
+              <div className="p-6 text-center">
+                <h3 className="text-lg font-semibold text-gray-900">Excel to PDF</h3>
+                <p className="text-sm text-gray-500">Report Sharing</p>
+              </div>
+            </div>
           </div>
         </div>
       </section>

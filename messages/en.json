@@ -76,7 +76,7 @@
   },
   "homepage": {
     "hero_title": "Convert Anything, Share Everything!",
-    "hero_subtitle": "Join {userCount} users who converted {fileCount} files",
+    "hero_subtitle": "Join 50,000+ users who converted 2M+ files securely",
     "upload_text": "Drag & drop your files here",
     "upload_button": "Choose Files",
     "or_text": "or",
@@ -93,6 +93,7 @@
     "convert_now": "Convert Now",
     "secure_files_notice": "Your files are processed securely and automatically deleted after 24 hours",
     "explore_all_features": "Explore All Features",
+    "why_choose_us": "Why Choose ConvertViral?",
     "why_choose_us_desc": "Discover why millions of users trust ConvertViral for their file conversion needs",
     "free_tag": "FREE",
     "convert_up_to_500mb": "Convert up to 500MB",
@@ -102,7 +103,9 @@
     "earn_rewards": "Earn Rewards",
     "earn_rewards_desc": "Collect points and unlock badges while converting files",
     "earn_badges": "Earn badges",
-    "unlock_premium": "Unlock premium features"
+    "unlock_premium": "Unlock premium features",
+    "popular_conversions_title": "Popular Conversions",
+    "popular_conversions_desc": "Quickly convert your files with our most popular conversion tools."
   },
   "formats": {
     "pdf": "PDF Document",
