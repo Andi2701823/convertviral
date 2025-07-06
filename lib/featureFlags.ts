@@ -51,5 +51,8 @@ export const FEATURE_FLAGS = {
  * @returns boolean indicating if the feature is enabled
  */
 export function isFeatureEnabled(feature: keyof typeof FEATURE_FLAGS): boolean {
-  return FEATURE_FLAGS[feature];
+  if (feature === 'betaMessage') {
+    return false; // Handle the string case
+  }
+  return Boolean(FEATURE_FLAGS[feature]);
 }

@@ -1,4 +1,5 @@
 import JsonLd from '@/components/JsonLd';
+import { metadata } from './metadata';
 
 function generateJsonLd() {
   return {
@@ -33,6 +34,8 @@ function generateJsonLd() {
     }
   };
 }
+
+export { metadata };
 
 export default function DashboardLayout({
   children,

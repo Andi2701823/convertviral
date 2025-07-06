@@ -12,6 +12,7 @@ exports.getFileSizeLimit = getFileSizeLimit;
 exports.formatFileSize = formatFileSize;
 exports.getEstimatedConversionTime = getEstimatedConversionTime;
 const fa_1 = require("react-icons/fa");
+const featureFlags_1 = require("./featureFlags");
 // Define file categories
 exports.fileCategories = {
     document: {
@@ -408,6 +409,10 @@ async function validateFileType(mimeType, extension) {
  * @returns Promise<void> that resolves if valid, rejects if invalid
  */
 async function validateFileSize(fileSize, isPremium) {
+    // Skip file size validation if disabled via feature flags
+    if (featureFlags_1.FEATURE_FLAGS.fileSizeLimits === false) {
+        return Promise.resolve();
+    }
     // Define size limits
     const FREE_SIZE_LIMIT = 50 * 1024 * 1024; // 50MB
     const PREMIUM_SIZE_LIMIT = 500 * 1024 * 1024; // 500MB
@@ -424,6 +429,10 @@ async function validateFileSize(fileSize, isPremium) {
  * @returns Size limit in bytes
  */
 function getFileSizeLimit(isPremium) {
+    // If file size limits are disabled, return a very large number
+    if (featureFlags_1.FEATURE_FLAGS.fileSizeLimits === false) {
+        return 1024 * 1024 * 1024; // 1GB for everyone when limits are disabled
+    }
     return isPremium ? 500 * 1024 * 1024 : 50 * 1024 * 1024;
 }
 /**

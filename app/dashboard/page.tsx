@@ -3,14 +3,8 @@
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-import { Metadata } from 'next';
 import UserProfile from '@/components/UserProfile';
 import ConversionHistory from '@/components/ConversionHistory';
-
-export const metadata: Metadata = {
-  title: 'Dashboard - ConvertViral',
-  description: 'View your conversion history, badges, and stats.',
-};
 
 export default function DashboardPage() {
   const { data: session, status } = useSession();

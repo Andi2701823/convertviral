@@ -59,6 +59,7 @@ const redis_1 = require("./redis");
 const zod_1 = require("zod");
 const monitoring_1 = require("./monitoring");
 const winston_1 = require("winston");
+const featureFlags_1 = require("./featureFlags");
 /**
  * Security logger for tracking security events
  */
@@ -342,6 +343,10 @@ class RateLimiter {
      * Check if user is within rate limits
      */
     static async checkRateLimit(userId, action, userPlan, amount = 1) {
+        // Skip rate limiting if conversion limits are disabled via feature flags
+        if (featureFlags_1.FEATURE_FLAGS.conversionLimits === false) {
+            return { allowed: true, remaining: 999999, resetTime: Date.now() + 3600000 };
+        }
         try {
             const redis = await (0, redis_1.getRedisClient)();
             const config = this.RATE_LIMITS[userPlan][action];
