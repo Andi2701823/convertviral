@@ -3,14 +3,12 @@
 import { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { motion } from 'framer-motion';
-import { useTranslations } from 'next-intl';
 
 interface FileConverterProps {
   maxFileSize: number;
 }
 
 const FileConverter: React.FC<FileConverterProps> = ({ maxFileSize }) => {
-  const t = useTranslations('conversion');
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [isConverting, setIsConverting] = useState(false);
   const [conversionProgress, setConversionProgress] = useState(0);
@@ -63,14 +61,14 @@ const FileConverter: React.FC<FileConverterProps> = ({ maxFileSize }) => {
           isDragActive ? 'border-primary-500 bg-primary-50' : 'border-gray-300 hover:border-primary-400'
         }`}>
         <input {...getInputProps()} />
-        <p className="text-gray-500">{t('drop_files_here')}</p>
+        <p className="text-gray-500">Drop files here or click to upload</p>
       </div>
 
       {uploadError && <p className="text-red-500 mt-4">{uploadError}</p>}
 
       {uploadedFiles.length > 0 && (
         <div className="mt-6">
-          <h3 className="text-lg font-medium">{t('uploaded_file')}</h3>
+          <h3 className="text-lg font-medium">Uploaded File</h3>
           <ul>
             {uploadedFiles.map((file) => (
               <li key={file.name} className="mt-2 p-2 bg-gray-100 rounded-md">
@@ -86,7 +84,7 @@ const FileConverter: React.FC<FileConverterProps> = ({ maxFileSize }) => {
           onClick={handleConvert}
           disabled={uploadedFiles.length === 0 || isConverting}
           className="w-full bg-primary-600 text-white font-semibold py-3 px-4 rounded-lg hover:bg-primary-700 disabled:bg-gray-400 transition-colors duration-300">
-          {isConverting ? t('converting') : t('convert_now')}
+          {isConverting ? 'Converting...' : 'Convert Now'}
         </button>
       </div>
 
@@ -110,7 +108,7 @@ const FileConverter: React.FC<FileConverterProps> = ({ maxFileSize }) => {
             href={convertedFile}
             download={`converted-${uploadedFiles[0].name}`}
             className="inline-flex items-center justify-center bg-green-500 text-white font-semibold px-6 py-3 rounded-lg shadow-md hover:bg-green-600 transition-colors duration-300">
-            {t('download_file')}
+            Download File
           </a>
         </div>
       )}

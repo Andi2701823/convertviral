@@ -1,15 +1,9 @@
-import { useTranslations } from 'next-intl';
-import { getTranslations } from 'next-intl/server';
 import { Metadata } from 'next';
 
-export async function generateMetadata(
-  { params }: { params: { locale: string } },
-): Promise<Metadata> {
-  const t = await getTranslations({ locale: params.locale, namespace: 'Metadata' });
-  
+export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: t('cookie_policy_title'),
-    description: t('cookie_policy_description'),
+    title: 'Cookie-Richtlinie - ConvertViral',
+    description: 'Informationen über die Verwendung von Cookies auf ConvertViral.com',
     alternates: {
       canonical: 'https://convertviral.com/cookies',
       languages: {
@@ -21,7 +15,6 @@ export async function generateMetadata(
 }
 
 export default function CookiePolicyPage() {
-  const t = useTranslations('cookies');
   
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">

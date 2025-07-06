@@ -1,10 +1,8 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { useTranslations } from 'next-intl';
 
 export default function Loading() {
-  const t = useTranslations('loading');
   return (
     <div className="min-h-[70vh] flex flex-col items-center justify-center">
       <motion.div
@@ -26,7 +24,7 @@ export default function Loading() {
           transition={{ delay: 0.3, duration: 0.5 }}
           className="mt-8 text-2xl font-semibold text-gray-800"
         >
-          {t('title')}
+          Loading...
         </motion.h2>
         
         <motion.p
@@ -35,7 +33,7 @@ export default function Loading() {
           transition={{ delay: 0.5, duration: 0.5 }}
           className="mt-2 text-gray-600"
         >
-          {t('description')}
+          Please wait while we process your request.
         </motion.p>
       </motion.div>
     </div>
