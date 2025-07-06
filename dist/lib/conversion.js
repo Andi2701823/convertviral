@@ -32,6 +32,9 @@ var __importStar = (this && this.__importStar) || (function () {
         return result;
     };
 })();
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.convertFile = convertFile;
 exports.getSupportedFormats = getSupportedFormats;
@@ -40,10 +43,10 @@ exports.checkForBadgeEarning = checkForBadgeEarning;
 exports.cleanupOldConversions = cleanupOldConversions;
 const redis_1 = require("./redis");
 const fileTypes_1 = require("./fileTypes");
-const path = __importStar(require("path"));
 const fs = __importStar(require("fs"));
 const child_process_1 = require("child_process");
 const util = __importStar(require("util"));
+const conversionService_1 = __importDefault(require("./conversionService"));
 // Convert exec to Promise-based
 const execPromise = util.promisify(child_process_1.exec);
 /**
@@ -53,69 +56,8 @@ const execPromise = util.promisify(child_process_1.exec);
  * @returns Promise with conversion result
  */
 async function convertFile(job, options = {}) {
-    try {
-        // Update job status to PROCESSING
-        job.status = 'PROCESSING';
-        await (0, redis_1.setCache)(`conversion:${job.jobId}`, job, 60 * 60 * 24); // 24 hours TTL
-        // Set initial progress
-        await (0, redis_1.setCache)(`progress:${job.jobId}`, 0, 60 * 60 * 24);
-        // Ensure output directory exists
-        const outputDir = path.join(process.cwd(), 'uploads', 'output');
-        if (!fs.existsSync(outputDir)) {
-            fs.mkdirSync(outputDir, { recursive: true });
-        }
-        // Generate output filename
-        const sourceExt = path.extname(job.sourceFile);
-        const baseName = path.basename(job.sourceFile, sourceExt);
-        const targetExt = `.${job.targetFormat.toLowerCase()}`;
-        const outputFile = path.join(outputDir, `${baseName}_${Date.now()}${targetExt}`);
-        // Perform the conversion based on source and target formats
-        await performConversion(job.sourceFile, outputFile, job.sourceFormat, job.targetFormat, options, job.jobId);
-        // Check if output file exists
-        if (!fs.existsSync(outputFile)) {
-            throw new Error('Conversion failed: Output file not created');
-        }
-        // Get output file size
-        const stats = fs.statSync(outputFile);
-        // Set final progress
-        await (0, redis_1.setCache)(`progress:${job.jobId}`, 100, 60 * 60 * 24);
-        // Calculate points earned
-        const pointsEarned = calculateConversionPoints(job.sourceSize, job.targetFormat);
-        // Check for badges earned
-        const badgesEarned = await checkForBadgeEarning(job.userId, job.sourceFormat, job.targetFormat);
-        // Create result object
-        const result = {
-            jobId: job.jobId,
-            status: 'COMPLETED',
-            resultUrl: `/api/download?file=${path.basename(outputFile)}`,
-            resultSize: stats.size,
-            completedAt: Date.now(),
-            pointsEarned,
-            badgesEarned,
-        };
-        // Update job status to COMPLETED
-        job.status = 'COMPLETED';
-        await (0, redis_1.setCache)(`conversion:${job.jobId}`, job, 60 * 60 * 24);
-        // Store result in Redis
-        await (0, redis_1.setCache)(`result:${job.jobId}`, result, 60 * 60 * 24);
-        return result;
-    }
-    catch (error) {
-        console.error('Conversion error:', error);
-        // Update job status to FAILED
-        job.status = 'FAILED';
-        await (0, redis_1.setCache)(`conversion:${job.jobId}`, job, 60 * 60 * 24);
-        // Create error result
-        const result = {
-            jobId: job.jobId,
-            status: 'FAILED',
-            error: error instanceof Error ? error.message : 'Unknown error',
-            completedAt: Date.now(),
-        };
-        // Store result in Redis
-        await (0, redis_1.setCache)(`result:${job.jobId}`, result, 60 * 60 * 24);
-        return result;
-    }
+    const conversionService = new conversionService_1.default(job, options);
+    return conversionService.run();
 }
 /**
  * Perform the actual conversion using appropriate tools

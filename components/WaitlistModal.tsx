@@ -264,7 +264,7 @@ export default function WaitlistModal({
                 </form>
 
                 <p className="text-xs text-gray-500 text-center">
-                  We'll only email you about the launch and important updates. No spam, ever.
+                  We&apos;ll only email you about the launch and important updates. No spam, ever.
                 </p>
               </div>
             )}
@@ -277,10 +277,10 @@ export default function WaitlistModal({
                 
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                    You're on the list!
+                    You&apos;re on the list!
                   </h3>
                   <p className="text-gray-600">
-                    We'll notify you as soon as {planType} launches with your exclusive discount.
+                    We&apos;ll notify you as soon as {planType} launches with your exclusive discount.
                   </p>
                 </div>
 
