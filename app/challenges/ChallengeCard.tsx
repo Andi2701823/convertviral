@@ -1,6 +1,5 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
 import { UserChallenge } from '@/lib/gamification';
 
 interface ChallengeCardProps {
@@ -20,7 +19,6 @@ export default function ChallengeCard({
   formatTimeRemaining,
   formatRelativeTime
 }: ChallengeCardProps) {
-  const t = useTranslations('challenges');
   const { challenge, progress, completed, completedAt } = userChallenge;
   const progressPercentage = Math.min(100, Math.round((progress / challenge.requirement) * 100));
   const emoji = getChallengeEmoji(challenge.type);
@@ -40,7 +38,7 @@ export default function ChallengeCard({
       <div className="mb-4">
         <div className="flex justify-between mb-1">
           <span className="text-sm font-medium">
-            {t('card.progress')}: {progress} / {challenge.requirement}
+            Progress: {progress} / {challenge.requirement}
           </span>
           <span className="text-sm font-medium">{progressPercentage}%</span>
         </div>
@@ -57,12 +55,12 @@ export default function ChallengeCard({
           <span className={`text-xs px-2 py-1 rounded-full ${getChallengeColor(challenge.points)} text-white`}>
             {getChallengeDifficulty(challenge.points)}
           </span>
-          <span className="text-xs text-gray-600 dark:text-gray-400">{challenge.points} {t('card.xp')}</span>
+          <span className="text-xs text-gray-600 dark:text-gray-400">{challenge.points} XP</span>
         </div>
         
         {completed ? (
           <span className="text-xs text-green-600 dark:text-green-400 font-medium">
-            {t('card.completed')} {completedAt && formatRelativeTime(completedAt)}
+            Completed {completedAt && formatRelativeTime(completedAt)}
           </span>
         ) : (
           <span className="text-xs text-amber-600 dark:text-amber-400 font-medium">

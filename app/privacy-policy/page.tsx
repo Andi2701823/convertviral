@@ -1,13 +1,11 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
 import { motion } from 'framer-motion';
-import { Link } from '../../navigation';
+import Link from 'next/link';
 
 interface PrivacyPolicyProps {}
 
 const PrivacyPolicy: React.FC<PrivacyPolicyProps> = () => {
-  const t = useTranslations('privacy');
 
   const openCookiePreferences = () => {
     if (typeof window !== 'undefined' && (window as any).openCookiePreferences) {

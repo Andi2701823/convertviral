@@ -1,12 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { Link } from '../navigation';
+import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { useTranslations } from 'next-intl';
 
 const Footer = () => {
-  const t = useTranslations('footer');
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
 
@@ -66,7 +64,7 @@ const Footer = () => {
               ConvertViral
             </h3>
             <p className="text-gray-400 text-sm">
-              {t('description')}
+              Your trusted platform for fast and secure file conversions. Convert any file format with ease.
             </p>
             <div className="flex space-x-4">
               {/* Social Media Icons */}
@@ -95,36 +93,36 @@ const Footer = () => {
 
           {/* Conversion Links */}
           <motion.div variants={itemVariants} className="space-y-4">
-            <h3 className="text-lg font-semibold">{t('popular_conversions')}</h3>
+            <h3 className="text-lg font-semibold">Popular Conversions</h3>
             <ul className="space-y-2 text-gray-400">
               <li>
                 <Link href="/convert/pdf-to-word" className="hover:text-primary-400 transition-colors">
-                  {t('pdf_to_word')}
+                  PDF to Word
                 </Link>
               </li>
               <li>
                 <Link href="/convert/jpg-to-pdf" className="hover:text-primary-400 transition-colors">
-                  {t('jpg_to_pdf')}
+                  JPG to PDF
                 </Link>
               </li>
               <li>
                 <Link href="/convert/mp4-to-mp3" className="hover:text-primary-400 transition-colors">
-                  {t('mp4_to_mp3')}
+                  MP4 to MP3
                 </Link>
               </li>
               <li>
                 <Link href="/convert/word-to-pdf" className="hover:text-primary-400 transition-colors">
-                  {t('word_to_pdf')}
+                  Word to PDF
                 </Link>
               </li>
               <li>
                 <Link href="/convert/png-to-jpg" className="hover:text-primary-400 transition-colors">
-                  {t('png_to_jpg')}
+                  PNG to JPG
                 </Link>
               </li>
               <li>
                 <Link href="/convert" className="font-medium text-primary-400 hover:underline">
-                  {t('view_all_conversions')}
+                  View All Conversions
                 </Link>
               </li>
             </ul>
@@ -132,36 +130,36 @@ const Footer = () => {
 
           {/* Company Links */}
           <motion.div variants={itemVariants} className="space-y-4">
-            <h3 className="text-lg font-semibold">{t('company')}</h3>
+            <h3 className="text-lg font-semibold">Company</h3>
             <ul className="space-y-2 text-gray-400">
               <li>
                 <Link href="/about" className="hover:text-primary-400 transition-colors">
-                  {t('about_us')}
+                  About Us
                 </Link>
               </li>
               <li>
                 <Link href="/features" className="hover:text-primary-400 transition-colors">
-                  {t('features')}
+                  Features
                 </Link>
               </li>
               <li>
                 <Link href="/pricing" className="hover:text-primary-400 transition-colors">
-                  {t('pricing')}
+                  Pricing
                 </Link>
               </li>
               <li>
                 <Link href="/contact" className="hover:text-primary-400 transition-colors">
-                  {t('contact_us')}
+                  Contact Us
                 </Link>
               </li>
               <li>
                 <Link href="/faq" className="hover:text-primary-400 transition-colors">
-                  {t('faq')}
+                  FAQ
                 </Link>
               </li>
               <li>
                 <Link href="/blog" className="hover:text-primary-400 transition-colors">
-                  {t('blog')}
+                  Blog
                 </Link>
               </li>
             </ul>
@@ -169,9 +167,9 @@ const Footer = () => {
 
           {/* Newsletter Signup */}
           <motion.div variants={itemVariants} className="space-y-4">
-            <h3 className="text-lg font-semibold">{t('stay_updated')}</h3>
+            <h3 className="text-lg font-semibold">Stay Updated</h3>
             <p className="text-gray-400 text-sm">
-              {t('newsletter_prompt')}
+              Subscribe to our newsletter for the latest updates and features.
             </p>
             <form onSubmit={handleSubscribe} className="space-y-2">
               <div className="relative">
@@ -179,7 +177,7 @@ const Footer = () => {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder={t('email_placeholder')}
+                  placeholder="Enter your email"
                   className="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-700 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                   required
                 />
@@ -187,7 +185,7 @@ const Footer = () => {
                   type="submit"
                   className="absolute right-1 top-1 bottom-1 px-4 bg-primary-600 hover:bg-primary-700 text-white rounded-md transition-colors duration-200"
                 >
-                  {t('subscribe_button')}
+                  Subscribe
                 </button>
               </div>
               {subscribed && (
@@ -196,7 +194,7 @@ const Footer = () => {
                   animate={{ opacity: 1, y: 0 }}
                   className="text-green-400 text-sm"
                 >
-                  {t('subscribe_success')}
+                  Thanks for subscribing!
                 </motion.p>
               )}
             </form>

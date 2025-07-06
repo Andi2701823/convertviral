@@ -1,12 +1,10 @@
 'use client';
 
-import { Link } from '../navigation';
-import { useTranslations } from 'next-intl';
+import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { ArrowRightIcon } from '@/components/Icons';
 
 export default function NotFound() {
-  const t = useTranslations('not_found');
   return (
     <div className="min-h-[70vh] flex items-center justify-center px-4 py-12">
       <div className="text-center">
@@ -24,9 +22,9 @@ export default function NotFound() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
         >
-          <h2 className="text-3xl font-semibold mb-4">{t('title')}</h2>
+          <h2 className="text-3xl font-semibold mb-4">Page Not Found</h2>
           <p className="text-xl text-gray-600 mb-8 max-w-md mx-auto">
-            {t('description')}
+            The page you are looking for doesn't exist or has been moved.
           </p>
         </motion.div>
         
@@ -40,14 +38,14 @@ export default function NotFound() {
             href="/"
             className="inline-flex items-center justify-center bg-primary-600 text-white font-semibold px-6 py-3 rounded-lg shadow-md hover:bg-primary-700 transition-colors duration-300"
           >
-            {t('buttons.go_home')}
+            Go to Home Page
             <ArrowRightIcon className="ml-2 h-5 w-5" />
           </Link>
           <Link 
             href="/convert"
             className="inline-flex items-center justify-center bg-white text-primary-600 border border-primary-600 font-semibold px-6 py-3 rounded-lg shadow-md hover:bg-gray-50 transition-colors duration-300"
           >
-            {t('buttons.convert_files')}
+            Convert Files
           </Link>
         </motion.div>
         
@@ -58,13 +56,13 @@ export default function NotFound() {
           className="mt-12"
         >
           <p className="text-gray-500">
-            {t('help_text.prefix')}{' '}
+            Need help?{' '}
             <Link href="/contact" className="text-primary-600 hover:underline">
-              {t('help_text.contact')}
+              Contact us
             </Link>
-            {' '}{t('help_text.or')}{' '}
+            {' '}or{' '}
             <Link href="/faq" className="text-primary-600 hover:underline">
-              {t('help_text.faq')}
+              check our FAQ
             </Link>
           </p>
         </motion.div>

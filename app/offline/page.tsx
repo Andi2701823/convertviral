@@ -1,8 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Link } from '../../navigation';
-import { useTranslations } from 'next-intl';
+import Link from 'next/link';
 import { motion } from 'framer-motion';
 
 // Define interfaces for conversion objects
@@ -30,7 +29,6 @@ interface PendingConversion {
 }
 
 export default function OfflinePage() {
-  const t = useTranslations('offline');
   // State for offline data
   const [offlineConversions, setOfflineConversions] = useState<ConversionHistoryItem[]>([]);
   const [pendingConversions, setPendingConversions] = useState<PendingConversion[]>([]);
@@ -74,32 +72,32 @@ export default function OfflinePage() {
             </svg>
           </div>
           
-          <h1 className="text-2xl font-bold text-center text-gray-800 mb-2">{t('title')}</h1>
+          <h1 className="text-2xl font-bold text-center text-gray-800 mb-2">Offline Mode</h1>
           
           
           <p className="text-gray-600 text-center mb-6">
-            {t('description')}
+            You are currently in offline mode. Some features may be limited until your connection is restored.
           </p>
           
           <div className="space-y-4">
             <div className="bg-gray-50 p-4 rounded-lg">
-            <h2 className="font-medium text-gray-800 mb-2">{t('capabilities.title')}</h2>
+            <h2 className="font-medium text-gray-800 mb-2">Available Offline</h2>
             <ul className="text-gray-600 space-y-2 list-disc list-inside">
-              <li>{t('capabilities.view_history')}</li>
-              <li>{t('capabilities.queue_conversions')}</li>
-              <li>{t('capabilities.check_achievements')}</li>
+              <li>View your conversion history</li>
+              <li>Queue conversions for when you're back online</li>
+              <li>Check your achievements and progress</li>
             </ul>
           </div>
           
           {isLoading ? (
             <div className="mt-4 p-4 text-center text-gray-500">
-              <p>{t('loading')}</p>
+              <p>Loading offline data...</p>
             </div>
           ) : (
             <div className="mt-6 space-y-6">
               {offlineConversions.length > 0 && (
                 <div className="bg-white p-4 rounded-lg shadow-sm">
-                  <h3 className="font-medium text-gray-800 mb-3">{t('cached_conversions')}</h3>
+                  <h3 className="font-medium text-gray-800 mb-3">Cached Conversions</h3>
                   <div className="space-y-2">
                     {offlineConversions.map((conversion, index) => (
                       <motion.div 
@@ -122,7 +120,7 @@ export default function OfflinePage() {
               
               {pendingConversions.length > 0 && (
                 <div className="bg-white p-4 rounded-lg shadow-sm">
-                  <h3 className="font-medium text-gray-800 mb-3">{t('pending_conversions')}</h3>
+                  <h3 className="font-medium text-gray-800 mb-3">Pending Conversions</h3>
                   <div className="space-y-2">
                     {pendingConversions.map((conversion, index) => (
                       <motion.div 
@@ -145,7 +143,7 @@ export default function OfflinePage() {
               
               {offlineConversions.length === 0 && pendingConversions.length === 0 && (
                 <div className="bg-white p-4 rounded-lg shadow-sm text-center">
-                  <p className="text-gray-500">{t('no_conversions')}</p>
+                  <p className="text-gray-500">No conversions found in offline storage.</p>
                 </div>
               )}
             </div>
@@ -153,10 +151,10 @@ export default function OfflinePage() {
             
             <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
               <Link href="/" className="btn-primary text-center flex-1">
-                {t('buttons.try_again')}
+                Try Again
               </Link>
               <Link href="/dashboard" className="btn-secondary text-center flex-1">
-                {t('buttons.go_to_dashboard')}
+                Go to Dashboard
               </Link>
             </div>
           </div>
@@ -164,8 +162,8 @@ export default function OfflinePage() {
         
         <div className="bg-gray-50 px-8 py-4">
           <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-500">{t('footer.brand')}</span>
-            <span className="text-sm text-gray-500">{t('footer.mode')}</span>
+            <span className="text-sm text-gray-500">ConvertViral</span>
+            <span className="text-sm text-gray-500">Offline Mode</span>
           </div>
         </div>
       </motion.div>

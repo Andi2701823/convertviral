@@ -1,12 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Link } from '../navigation';
-import { usePathname, useRouter } from '../navigation';
+import Link from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import { useSession } from 'next-auth/react';
-import { useTranslations, useLocale } from 'next-intl';
 
 type Language = {
   code: string;
@@ -16,14 +15,7 @@ type Language = {
 };
 
 const languages: Language[] = [
-  { code: 'EN', name: 'English', flag: '🇺🇸', locale: 'en' },
-  { code: 'DE', name: 'Deutsch', flag: '🇩🇪', locale: 'de' },
-  { code: 'ES', name: 'Español', flag: '🇪🇸', locale: 'es' },
-  { code: 'FR', name: 'Français', flag: '🇫🇷', locale: 'fr' },
-  { code: 'PT', name: 'Português', flag: '🇵🇹', locale: 'pt' },
-  { code: 'IT', name: 'Italiano', flag: '🇮🇹', locale: 'it' },
-  { code: 'JA', name: '日本語', flag: '🇯🇵', locale: 'ja' },
-  { code: 'KO', name: '한국어', flag: '🇰🇷', locale: 'ko' },
+  { code: 'EN', name: 'English', flag: '🇺🇸', locale: 'en' }
 ];
 
 const Header = () => {
@@ -35,11 +27,9 @@ const Header = () => {
   const pathname = usePathname();
   const router = useRouter();
   const { data: session } = useSession();
-  const t = useTranslations('navigation');
-  const currentLocale = useLocale();
   
-  // Get current language from locale
-  const currentLanguage = languages.find(lang => lang.locale === currentLocale) || languages[0];
+  // Default to English
+  const currentLanguage = languages[0];
 
   // Check system preference for dark mode on initial load
   useEffect(() => {
@@ -77,12 +67,12 @@ const Header = () => {
   };
 
   const navLinks = [
-    { name: t('home'), href: '/' },
-    { name: t('convert'), href: '/convert' },
-    { name: t('tools'), href: '/tools' },
-    { name: t('leaderboard'), href: '/leaderboard' },
-    { name: t('badges'), href: '/badges' },
-    { name: t('pricing'), href: '/pricing' },
+    { name: 'Home', href: '/' },
+    { name: 'Convert', href: '/convert' },
+    { name: 'Tools', href: '/tools' },
+    { name: 'Leaderboard', href: '/leaderboard' },
+    { name: 'Badges', href: '/badges' },
+    { name: 'Pricing', href: '/pricing' },
   ];
 
   const isActive = (path: string) => {
@@ -102,22 +92,7 @@ const Header = () => {
 
   const handleLanguageChange = async (lang: Language) => {
     setIsLanguageMenuOpen(false);
-    
-    try {
-      // Set the locale cookie via API
-      await fetch('/api/locale', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ locale: lang.locale }),
-      });
-      
-      // Refresh the page to apply the new locale
-      window.location.reload();
-    } catch (error) {
-      console.error('Failed to change language:', error);
-    }
+    // Language switching is disabled as i18n has been removed
   };
 
   return (

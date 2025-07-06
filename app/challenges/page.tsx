@@ -3,17 +3,13 @@
 import { useState, useEffect } from 'react';
 import { UserChallenge } from '@/lib/gamification';
 import { useSession } from 'next-auth/react';
-import { useTranslations } from 'next-intl';
-import { Link } from '../../navigation';
+import Link from 'next/link';
 import { Suspense } from 'react';
 import ChallengeCard from './ChallengeCard';
 
 
 
 export default function ChallengesPage() {
-  // Get translations
-  const t = useTranslations('challenges');
-  
   // Get user session
   const { data: session, status } = useSession();
   const [userChallenges, setUserChallenges] = useState<UserChallenge[]>([]);
@@ -59,9 +55,9 @@ export default function ChallengesPage() {
   
   // Helper function to determine difficulty based on points
   const getChallengeDifficulty = (points: number): string => {
-    if (points <= 30) return t('difficulty.easy');
-    if (points <= 75) return t('difficulty.medium');
-    return t('difficulty.hard');
+    if (points <= 30) return 'Easy';
+    if (points <= 75) return 'Medium';
+    return 'Hard';
   };
   
   // Helper function to get challenge color based on difficulty
@@ -87,11 +83,11 @@ export default function ChallengesPage() {
     const diffInDays = diffInHours / 24;
     
     if (diffInHours < 24) {
-      return diffInHours < 1 ? t('time.just_now') : t('time.hours_ago', { hours: Math.floor(diffInHours) });
+      return diffInHours < 1 ? 'Just now' : `${Math.floor(diffInHours)} hours ago`;
     } else if (diffInDays < 2) {
-      return t('time.yesterday');
+      return 'Yesterday';
     } else if (diffInDays < 7) {
-      return t('time.days_ago', { days: Math.floor(diffInDays) });
+      return `${Math.floor(diffInDays)} days ago`;
     } else {
       return new Date(date).toLocaleDateString();
     }
@@ -112,55 +108,55 @@ export default function ChallengesPage() {
     const diffInMs = expiresAt.getTime() - now.getTime();
     
     if (diffInMs <= 0) {
-      return t('time.expired');
+      return 'Expired';
     }
     
     const diffInHours = diffInMs / (1000 * 60 * 60);
     
     if (diffInHours < 1) {
       const diffInMinutes = diffInMs / (1000 * 60);
-      return t('time.minutes_left', { minutes: Math.floor(diffInMinutes) });
+      return `${Math.floor(diffInMinutes)} minutes left`;
     } else if (diffInHours < 24) {
-      return t('time.hours_left', { hours: Math.floor(diffInHours) });
+      return `${Math.floor(diffInHours)} hours left`;
     } else {
       const diffInDays = diffInHours / 24;
-      return t('time.days_left', { days: Math.floor(diffInDays) });
+      return `${Math.floor(diffInDays)} days left`;
     }
   };
 
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-4">{t('title')}</h1>
+        <h1 className="text-3xl font-bold mb-4">Challenges</h1>
         <p className="text-gray-600 dark:text-gray-300 mb-6">
-          {t('description')}
+          Complete challenges to earn XP and unlock rewards. New challenges are available daily!  
         </p>
       </div>
       
       {!isLoggedIn ? (
         <div className="bg-gray-100 dark:bg-gray-800 p-6 rounded-lg text-center">
-          <h2 className="text-xl font-semibold mb-4">{t('sign_in.title')}</h2>
+          <h2 className="text-xl font-semibold mb-4">Sign in to view challenges</h2>
           <p className="text-gray-600 dark:text-gray-400 mb-6">
-            {t('sign_in.description')}
+            You need to be signed in to view and complete challenges. Sign in now to start earning rewards!
           </p>
           <Link 
             href="/api/auth/signin"
             className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
           >
-            {t('sign_in.button')}
+            Sign In
           </Link>
         </div>
       ) : userChallenges.length === 0 ? (
         <div className="bg-gray-100 dark:bg-gray-800 p-6 rounded-lg text-center">
-          <h2 className="text-xl font-semibold mb-4">{t('no_challenges.title')}</h2>
+          <h2 className="text-xl font-semibold mb-4">No Active Challenges</h2>
           <p className="text-gray-600 dark:text-gray-400 mb-6">
-            {t('no_challenges.description')}
+            You don't have any active challenges right now. Check back later or try converting some files to unlock new challenges!
           </p>
           <Link 
             href="/"
             className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
           >
-            {t('no_challenges.button')}
+            Start Converting
           </Link>
         </div>
       ) : (

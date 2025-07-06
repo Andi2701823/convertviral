@@ -1,9 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useTranslations } from 'next-intl';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Link } from '../navigation';
+import Link from 'next/link';
 
 // Enhanced consent types for GDPR compliance
 export enum ConsentType {
@@ -42,7 +41,6 @@ interface ConsentRecord {
 interface CookieConsentProps {}
 
 const CookieConsent: React.FC<CookieConsentProps> = () => {
-  const t = useTranslations('cookies');
   const [isVisible, setIsVisible] = useState(false);
   const [isEU, setIsEU] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
@@ -397,14 +395,14 @@ const CookieConsent: React.FC<CookieConsentProps> = () => {
           <div className="container mx-auto p-4">
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
               <div className="flex-1">
-                <h3 className="text-lg font-semibold mb-2">{t('banner_title')}</h3>
+                <h3 className="text-lg font-semibold mb-2">Cookie Consent</h3>
                 <p className="text-sm text-gray-300 mb-2">
-                  {t('banner_description')}{' '}
+                  We use cookies to enhance your browsing experience, analyze site traffic, and personalize content.{' '}
                   <button 
                     onClick={toggleDetails}
                     className="text-primary-400 hover:underline focus:outline-none"
                   >
-                    {showDetails ? t('hide_details') : t('show_details')}
+                    {showDetails ? "Hide details" : "Show details"}
                   </button>
                 </p>
                 
@@ -425,9 +423,9 @@ const CookieConsent: React.FC<CookieConsentProps> = () => {
                             disabled
                             className="mr-2"
                           />
-                          <label htmlFor="essential-cookies" className="font-medium">{t('essential_title')}</label>
+                          <label htmlFor="essential-cookies" className="font-medium">Essential Cookies</label>
                         </div>
-                        <p className="text-gray-400 ml-6">{t('essential_description')}</p>
+                        <p className="text-gray-400 ml-6">These cookies are necessary for the website to function and cannot be switched off in our systems.</p>
                       </div>
                       
                       <div>
@@ -439,9 +437,9 @@ const CookieConsent: React.FC<CookieConsentProps> = () => {
                             onChange={(e) => handleConsentToggle(ConsentType.ANALYTICS, e.target.checked)}
                             className="mr-2"
                           />
-                          <label htmlFor="analytics-cookies" className="font-medium">{t('analytics_title')}</label>
+                          <label htmlFor="analytics-cookies" className="font-medium">Analytics Cookies</label>
                         </div>
-                        <p className="text-gray-400 ml-6">{t('analytics_description')}</p>
+                        <p className="text-gray-400 ml-6">These cookies allow us to count visits and traffic sources so we can measure and improve the performance of our site.</p>
                       </div>
                       
                       <div>
@@ -453,22 +451,22 @@ const CookieConsent: React.FC<CookieConsentProps> = () => {
                             onChange={(e) => handleConsentToggle(ConsentType.MARKETING, e.target.checked)}
                             className="mr-2"
                           />
-                          <label htmlFor="marketing-cookies" className="font-medium">{t('marketing_title')}</label>
+                          <label htmlFor="marketing-cookies" className="font-medium">Marketing Cookies</label>
                         </div>
-                        <p className="text-gray-400 ml-6">{t('marketing_description')}</p>
+                        <p className="text-gray-400 ml-6">These cookies help us show you relevant advertisements and promotions based on your browsing habits.</p>
                       </div>
                     </div>
                   </motion.div>
                 )}
                 
                 <div className="text-xs text-gray-400">
-                  {t('learn_more')}{' '}
+                  Learn more about our{' '}
                   <Link href="/privacy" className="text-primary-400 hover:underline">
-                    {t('privacy_policy')}  
+                    Privacy Policy  
                   </Link>
-                  {' '}{t('and')}{' '}
+                  {' '}and{' '}
                   <Link href="/cookies" className="text-primary-400 hover:underline">
-                    {t('cookie_policy')}
+                    Cookie Policy
                   </Link>
                 </div>
               </div>
@@ -478,19 +476,19 @@ const CookieConsent: React.FC<CookieConsentProps> = () => {
                   onClick={handleAcceptEssential}
                   className="px-4 py-2 text-sm bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors"
                 >
-                  {t('essential_only')}
+                  Essential Only
                 </button>
                 <button
                   onClick={handleSavePreferences}
                   className="px-4 py-2 text-sm bg-primary-600 hover:bg-primary-700 rounded-lg transition-colors"
                 >
-                  {t('accept_selected')}
+                  Accept Selected
                 </button>
                 <button
                   onClick={handleAcceptAll}
                   className="px-4 py-2 text-sm bg-green-600 hover:bg-green-700 rounded-lg transition-colors"
                 >
-                  {t('accept_all')}
+                  Accept All
                 </button>
               </div>
             </div>

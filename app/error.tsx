@@ -1,8 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { Link } from '../navigation';
-import { useTranslations } from 'next-intl';
+import Link from 'next/link';
 import { motion } from 'framer-motion';
 
 export default function Error({
@@ -12,7 +11,6 @@ export default function Error({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  const t = useTranslations('error');
   useEffect(() => {
     // Log the error to an error reporting service
     console.error('Application error:', error);
@@ -27,7 +25,7 @@ export default function Error({
           transition={{ duration: 0.5 }}
         >
           <div className="text-6xl text-red-500 mb-6">⚠️</div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">{t('title')}</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-4">Something went wrong</h1>
         </motion.div>
         
         <motion.div
@@ -36,7 +34,7 @@ export default function Error({
           transition={{ duration: 0.5, delay: 0.2 }}
         >
           <p className="text-lg text-gray-600 mb-8 max-w-md mx-auto">
-            {t('description')}
+            We're sorry, but an error occurred while processing your request. Please try again or return to the home page.
           </p>
         </motion.div>
         
@@ -50,13 +48,13 @@ export default function Error({
             onClick={reset}
             className="inline-flex items-center justify-center bg-primary-600 text-white font-semibold px-6 py-3 rounded-lg shadow-md hover:bg-primary-700 transition-colors duration-300"
           >
-            {t('buttons.try_again')}
+            Try Again
           </button>
           <Link 
             href="/"
             className="inline-flex items-center justify-center bg-white text-primary-600 border border-primary-600 font-semibold px-6 py-3 rounded-lg shadow-md hover:bg-gray-50 transition-colors duration-300"
           >
-            {t('buttons.go_home')}
+            Go to Home Page
           </Link>
         </motion.div>
         
@@ -67,9 +65,9 @@ export default function Error({
           className="mt-12"
         >
           <p className="text-gray-500">
-            {t('help_text.prefix')}{' '}
+            Need help?{' '}
             <Link href="/contact" className="text-primary-600 hover:underline">
-              {t('help_text.contact')}
+              Contact our support team
             </Link>
           </p>
           {process.env.NODE_ENV === 'development' && error?.message && (

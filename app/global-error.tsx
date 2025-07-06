@@ -2,7 +2,6 @@
 
 import { useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { useTranslations } from 'next-intl';
 
 export default function GlobalError({
   error,
@@ -11,7 +10,6 @@ export default function GlobalError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  const t = useTranslations('global_error');
   useEffect(() => {
     // Log the error to an error reporting service
     console.error('Global error:', error);
@@ -28,7 +26,7 @@ export default function GlobalError({
               transition={{ duration: 0.5 }}
             >
               <div className="text-6xl text-red-500 mb-6">🚨</div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-4">{t('title')}</h1>
+              <h1 className="text-3xl font-bold text-gray-900 mb-4">Critical Error</h1>
             </motion.div>
             
             <motion.div
@@ -37,7 +35,7 @@ export default function GlobalError({
               transition={{ duration: 0.5, delay: 0.2 }}
             >
               <p className="text-lg text-gray-600 mb-8 max-w-md mx-auto">
-                {t('description')}
+                We've encountered a critical error that prevents the application from running. We apologize for the inconvenience.
               </p>
             </motion.div>
             
@@ -51,13 +49,13 @@ export default function GlobalError({
                 onClick={reset}
                 className="inline-flex items-center justify-center bg-primary-600 text-white font-semibold px-6 py-3 rounded-lg shadow-md hover:bg-primary-700 transition-colors duration-300"
               >
-                {t('buttons.try_again')}
+                Try Again
               </button>
               <a 
                 href="/"
                 className="inline-flex items-center justify-center bg-white text-primary-600 border border-primary-600 font-semibold px-6 py-3 rounded-lg shadow-md hover:bg-gray-50 transition-colors duration-300"
               >
-                {t('buttons.go_home')}
+                Go to Home Page
               </a>
             </motion.div>
             
@@ -68,9 +66,9 @@ export default function GlobalError({
               className="mt-12"
             >
               <p className="text-gray-500">
-                {t('help_text.prefix')}{' '}
+                If this problem persists, please{' '}
                 <a href="mailto:support@convertviral.com" className="text-primary-600 hover:underline">
-                  {t('help_text.email')}
+                  contact our support team
                 </a>
               </p>
               {process.env.NODE_ENV === 'development' && error?.message && (

@@ -1,14 +1,12 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
 import { motion } from 'framer-motion';
-import { Link } from '../../navigation';
+import Link from 'next/link';
 import { useState } from 'react';
 
 interface CookiePolicyProps {}
 
 const CookiePolicy: React.FC<CookiePolicyProps> = () => {
-  const t = useTranslations('cookies');
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
 
   const openCookiePreferences = () => {
