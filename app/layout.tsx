@@ -55,7 +55,7 @@ export default function RootLayout({
   };
 
   return (
-    <html lang="en">
+    <html lang="de">
       <head>
         <JsonLd data={orgStructuredData} />
         <meta name="google-site-verification" content="8JuqKkIod-KCDrentWueKmaFj3BnMqnp1HXQ9tcC7hk" />
