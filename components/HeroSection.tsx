@@ -2,7 +2,7 @@
 
 import { useState, useRef } from 'react';
 import Link from 'next/link';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { ArrowRightIcon, DocumentIcon, ImageIcon, MusicIcon } from './Icons';
 
 type ConversionType = {
@@ -11,17 +11,15 @@ type ConversionType = {
   from: string;
   to: string;
   icon: React.ReactNode;
-  color: string;
 };
 
 const popularConversions: ConversionType[] = [
   {
-    id: 'pdf-to-word',
+    id: 'pdf-to-docx',
     name: 'PDF to Word',
     from: 'PDF',
     to: 'DOCX',
     icon: <DocumentIcon className="h-5 w-5" />,
-    color: 'bg-blue-500',
   },
   {
     id: 'jpg-to-pdf',
@@ -29,7 +27,6 @@ const popularConversions: ConversionType[] = [
     from: 'JPG',
     to: 'PDF',
     icon: <ImageIcon className="h-5 w-5" />,
-    color: 'bg-green-500',
   },
   {
     id: 'mp4-to-mp3',
@@ -37,17 +34,16 @@ const popularConversions: ConversionType[] = [
     from: 'MP4',
     to: 'MP3',
     icon: <MusicIcon className="h-5 w-5" />,
-    color: 'bg-purple-500',
   },
 ];
 
 const testimonials = [
-  { name: 'Sarah J.', text: 'Converted 5 files just now. So fast!' },
-  { name: 'Mike T.', text: 'Best converter I\'ve ever used!' },
-  { name: 'Elena R.', text: 'Saved me hours of work. Thank you!' },
-  { name: 'David K.', text: 'The quality is amazing. Highly recommend!' },
-  { name: 'Priya M.', text: 'Super easy to use and very reliable.' },
-  { name: 'Carlos B.', text: 'Just converted a 50MB video in seconds!' },
+  { name: 'Sarah J.', text: '5 files converted in seconds.' },
+  { name: 'Mike T.', text: 'Best converter I\'ve used!' },
+  { name: 'Elena R.', text: 'Saved me hours of work.' },
+  { name: 'David K.', text: 'Amazing quality.' },
+  { name: 'Priya M.', text: 'Very easy to use.' },
+  { name: 'Carlos B.', text: '50MB video in seconds!' },
 ];
 
 const HeroSection = () => {
@@ -80,7 +76,6 @@ const HeroSection = () => {
     const files = Array.from(e.dataTransfer.files);
     if (files.length > 0) {
       setSelectedFiles(files);
-      // In a real app, you would handle file upload/conversion here
     }
   };
 
@@ -88,7 +83,6 @@ const HeroSection = () => {
     if (e.target.files && e.target.files.length > 0) {
       const files = Array.from(e.target.files);
       setSelectedFiles(files);
-      // In a real app, you would handle file upload/conversion here
     }
   };
 
@@ -99,32 +93,25 @@ const HeroSection = () => {
   };
 
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-primary-600 via-primary-700 to-secondary-700 dark:from-primary-900 dark:via-primary-800 dark:to-secondary-800 py-20 lg:py-24">
-      {/* Background decorations */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-24 -right-24 w-96 h-96 bg-white opacity-5 rounded-full"></div>
-        <div className="absolute top-1/2 -left-24 w-64 h-64 bg-white opacity-5 rounded-full"></div>
-        <div className="absolute -bottom-32 left-1/2 transform -translate-x-1/2 w-80 h-80 bg-white opacity-5 rounded-full"></div>
-      </div>
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <section className="relative bg-surface-50 py-16 lg:py-24">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <motion.h1 
-            className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-6"
+          <motion.h1
+            className="text-4xl md:text-5xl lg:text-6xl font-bold text-surface-900 mb-4"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            Convert Anything, <span className="text-yellow-300">Share Everything!</span>
+            Convert Anything
           </motion.h1>
-          
-          <motion.p 
-            className="text-xl text-white text-opacity-90 max-w-3xl mx-auto"
+
+          <motion.p
+            className="text-xl text-surface-500 max-w-2xl mx-auto"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
           >
-            Join <span className="font-bold text-yellow-300">2.3M+</span> users who converted <span className="font-bold text-yellow-300">847M+</span> files
+            Fast, secure file conversion. No registration required.
           </motion.p>
         </div>
 
@@ -133,54 +120,53 @@ const HeroSection = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className="max-w-3xl mx-auto mb-12"
+          className="max-w-2xl mx-auto mb-12"
         >
-          <div 
-            className={`drop-zone ${isDragging ? 'drop-zone-active' : ''} bg-white dark:bg-gray-800 bg-opacity-90 dark:bg-opacity-90 backdrop-blur-lg rounded-xl shadow-xl border-2 border-dashed ${isDragging ? 'border-primary-400' : 'border-gray-300 dark:border-gray-600'} p-10 text-center cursor-pointer transition-all duration-300`}
+          <div
+            className={`drop-zone ${isDragging ? 'drop-zone-active' : ''} bg-white shadow-soft-lg rounded-2xl p-12`}
             onDragEnter={handleDragEnter}
             onDragLeave={handleDragLeave}
             onDragOver={handleDragOver}
             onDrop={handleDrop}
             onClick={openFileSelector}
           >
-            <input 
-              type="file" 
-              ref={fileInputRef} 
-              className="hidden" 
-              onChange={handleFileInputChange} 
-              multiple 
+            <input
+              type="file"
+              ref={fileInputRef}
+              className="hidden"
+              onChange={handleFileInputChange}
+              multiple
             />
-            
+
             <div className="flex flex-col items-center justify-center">
-              <motion.div 
-                className="h-20 w-20 mb-4 text-primary-500 dark:text-primary-400"
-                animate={{ 
-                  y: [0, -10, 0],
-                  scale: [1, 1.05, 1]
+              <motion.div
+                className="h-16 w-16 mb-4 text-primary-500"
+                animate={{
+                  y: [0, -8, 0],
                 }}
-                transition={{ 
-                  repeat: Infinity, 
-                  duration: 3,
-                  ease: "easeInOut" 
+                transition={{
+                  repeat: Infinity,
+                  duration: 2.5,
+                  ease: "easeInOut"
                 }}
               >
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
                 </svg>
               </motion.div>
-              
-              <h3 className="text-xl font-semibold mb-2 text-gray-800 dark:text-gray-200">
-                {selectedFiles.length > 0 
-                  ? `${selectedFiles.length} file${selectedFiles.length > 1 ? 's' : ''} selected` 
-                  : 'Drag & Drop your files here'}
+
+              <h3 className="text-xl font-semibold mb-2 text-surface-800">
+                {selectedFiles.length > 0
+                  ? `${selectedFiles.length} file${selectedFiles.length > 1 ? 's' : ''} selected`
+                  : 'Drop your files here'}
               </h3>
-              
-              <p className="text-gray-500 dark:text-gray-400 mb-4">
-                {selectedFiles.length > 0 
-                  ? 'Click convert to start processing' 
-                  : 'or click to browse your files'}
+
+              <p className="text-surface-500 mb-4">
+                {selectedFiles.length > 0
+                  ? 'Click to convert'
+                  : 'or click to browse'}
               </p>
-              
+
               {selectedFiles.length > 0 && (
                 <button className="btn-primary flex items-center">
                   Convert Now
@@ -198,80 +184,73 @@ const HeroSection = () => {
           transition={{ duration: 0.5, delay: 0.3 }}
           className="max-w-3xl mx-auto mb-12"
         >
-          <div className="text-center mb-4">
-            <h3 className="text-lg font-medium text-white text-opacity-90">Popular Conversions</h3>
-          </div>
-          
+          <p className="text-center text-sm text-surface-500 mb-4">Popular conversions</p>
+
           <div className="flex flex-wrap justify-center gap-3">
             {popularConversions.map((conversion) => (
-              <motion.div 
+              <motion.div
                 key={conversion.id}
-                whileHover={{ scale: 1.05 }}
+                whileHover={{ y: -2 }}
                 whileTap={{ scale: 0.98 }}
-                className="relative"
               >
-                <Link 
+                <Link
                   href={`/convert/${conversion.id}`}
-                  className="flex items-center bg-white dark:bg-gray-800 bg-opacity-90 dark:bg-opacity-90 backdrop-blur-sm rounded-lg px-4 py-3 shadow-md hover:shadow-lg transition-all duration-200"
+                  className="flex items-center bg-white rounded-lg px-4 py-3 shadow-soft hover:shadow-soft-lg transition-shadow duration-200"
                 >
-                  <div className={`${conversion.color} text-white p-2 rounded-md mr-3`}>
+                  <div className="bg-primary-100 text-primary-600 p-2 rounded-lg mr-3">
                     {conversion.icon}
                   </div>
                   <div className="text-left">
-                    <span className="block text-sm font-medium text-gray-900 dark:text-gray-100">{conversion.name}</span>
-                    <span className="block text-xs text-gray-500 dark:text-gray-400">{conversion.from} → {conversion.to}</span>
+                    <span className="block text-sm font-medium text-surface-800">{conversion.name}</span>
+                    <span className="block text-xs text-surface-500">{conversion.from} → {conversion.to}</span>
                   </div>
                 </Link>
               </motion.div>
             ))}
-            
-            <motion.div 
-              whileHover={{ scale: 1.05 }}
+
+            <motion.div
+              whileHover={{ y: -2 }}
               whileTap={{ scale: 0.98 }}
             >
-              <Link 
+              <Link
                 href="/convert"
-                className="flex items-center bg-white dark:bg-gray-800 bg-opacity-90 dark:bg-opacity-90 backdrop-blur-sm rounded-lg px-4 py-3 shadow-md hover:shadow-lg transition-all duration-200"
+                className="flex items-center bg-white rounded-lg px-4 py-3 shadow-soft hover:shadow-soft-lg transition-shadow duration-200"
               >
-                <div className="bg-gray-500 text-white p-2 rounded-md mr-3">
+                <div className="bg-surface-100 text-surface-600 p-2 rounded-lg mr-3">
                   <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>
                 </div>
                 <div className="text-left">
-                  <span className="block text-sm font-medium text-gray-900 dark:text-gray-100">More Formats</span>
-                  <span className="block text-xs text-gray-500 dark:text-gray-400">100+ supported</span>
+                  <span className="block text-sm font-medium text-surface-800">All Formats</span>
+                  <span className="block text-xs text-surface-500">100+ supported</span>
                 </div>
               </Link>
             </motion.div>
           </div>
         </motion.div>
 
-        {/* Social proof ticker */}
+        {/* Social proof */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.4 }}
-          className="max-w-5xl mx-auto overflow-hidden"
+          className="max-w-5xl mx-auto"
         >
-          <div className="relative py-4 bg-white dark:bg-gray-800 bg-opacity-10 dark:bg-opacity-10 backdrop-blur-sm rounded-xl">
-            <div className="flex items-center space-x-4 animate-marquee">
-              {[...testimonials, ...testimonials].map((testimonial, index) => (
-                <div 
-                  key={index} 
-                  className="flex-shrink-0 bg-white dark:bg-gray-800 bg-opacity-90 dark:bg-opacity-90 rounded-lg px-4 py-2 shadow-md"
-                >
-                  <div className="flex items-center">
-                    <div className="h-8 w-8 rounded-full bg-primary-100 dark:bg-primary-900 flex items-center justify-center text-primary-600 dark:text-primary-400 font-bold text-sm">
-                      {testimonial.name.charAt(0)}
-                    </div>
-                    <div className="ml-3">
-                      <p className="text-xs font-medium text-gray-900 dark:text-gray-100">{testimonial.name}</p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">{testimonial.text}</p>
-                    </div>
-                  </div>
-                </div>
-              ))}
+          <div className="flex items-center justify-center space-x-8 text-center">
+            <div>
+              <p className="text-2xl font-bold text-surface-900">2.3M+</p>
+              <p className="text-sm text-surface-500">Users</p>
+            </div>
+            <div className="w-px h-8 bg-surface-200"></div>
+            <div>
+              <p className="text-2xl font-bold text-surface-900">847M+</p>
+              <p className="text-sm text-surface-500">Files Converted</p>
+            </div>
+            <div className="w-px h-8 bg-surface-200"></div>
+            <div>
+              <p className="text-2xl font-bold text-surface-900">4.8/5</p>
+              <p className="text-sm text-surface-500">Rating</p>
             </div>
           </div>
         </motion.div>
