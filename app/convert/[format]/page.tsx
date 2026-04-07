@@ -122,7 +122,7 @@ export default function ConversionPage({ params }: { params: { format: string } 
         </p>
       </div>
       
-      <FileUploader sourceFormat={sourceFormat} targetFormat={targetFormat} />
+      <FileUploader />
       
       <div className="mt-16">
         <h2 className="text-2xl font-bold text-center mb-6">How to Convert {sourceFormatName} to {targetFormatName}</h2>

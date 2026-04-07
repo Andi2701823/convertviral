@@ -237,10 +237,7 @@ export default function ConversionPage({ params }: { params: { from: string; to:
             </p>
           </div>
           <div className="px-4 py-5 sm:p-6" id="upload">
-            <FileUploader 
-              sourceFormat={from}
-              targetFormat={to}
-            />
+            <FileUploader />
           </div>
         </div>
       </div>
