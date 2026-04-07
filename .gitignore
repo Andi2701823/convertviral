@@ -38,4 +38,4 @@ public/sw.js
 public/workbox-*.js
 
 # Uploads
-public/uploads
+public/uploadsdist/
