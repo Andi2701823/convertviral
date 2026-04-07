@@ -1,6 +1,6 @@
 /** @type {import('next-sitemap').IConfig} */
 module.exports = {
-  siteUrl: process.env.NEXT_PUBLIC_SITE_URL || 'https://convertviral.com',
+  siteUrl: 'https://convertviral.netlify.app',
   generateRobotsTxt: true,
   robotsTxtOptions: {
     policies: [
@@ -8,8 +8,8 @@ module.exports = {
       { userAgent: '*', disallow: ['/api/', '/dashboard/', '/settings/'] },
     ],
     additionalSitemaps: [
-      `${process.env.NEXT_PUBLIC_SITE_URL || 'https://convertviral.com'}/sitemaps/conversion-sitemaps.xml`,
-      `${process.env.NEXT_PUBLIC_SITE_URL || 'https://convertviral.com'}/sitemaps/format-sitemaps.xml`,
+      'https://convertviral.netlify.app/sitemaps/conversion-sitemaps.xml',
+      'https://convertviral.netlify.app/sitemaps/format-sitemaps.xml',
     ],
   },
   exclude: ['/api/*', '/dashboard/*', '/settings/*'],

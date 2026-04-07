@@ -1,8 +1,19 @@
 import { Metadata } from 'next';
+import JsonLd from '@/components/JsonLd';
 
 export const metadata: Metadata = {
   title: 'FAQ - ConvertViral',
   description: 'Frequently asked questions about ConvertViral file conversion service. Learn about our features, pricing, and how to use our platform.',
+  alternates: {
+    canonical: 'https://convertviral.netlify.app/faq',
+  },
+  openGraph: {
+    title: 'FAQ - ConvertViral',
+    description: 'Frequently asked questions about ConvertViral file conversion service.',
+    url: 'https://convertviral.netlify.app/faq',
+    siteName: 'ConvertViral',
+    type: 'website',
+  },
 };
 
 function generateFaqJsonLd(faqs: FAQItem[]) {
@@ -115,6 +126,7 @@ export default function FAQPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <JsonLd data={generateFaqJsonLd(faqs)} />
       <h1 className="text-3xl font-bold mb-2">Frequently Asked Questions</h1>
       <p className="text-gray-600 mb-8">Find answers to common questions about ConvertViral</p>
       
