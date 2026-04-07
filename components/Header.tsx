@@ -27,25 +27,25 @@ const Header = () => {
   const pathname = usePathname();
   const router = useRouter();
   const { data: session } = useSession();
-  
+
   // Default to English
   const currentLanguage = languages[0];
 
   // Check system preference for dark mode on initial load
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const isDark = localStorage.getItem('darkMode') === 'true' || 
-                    (!('darkMode' in localStorage) && 
+      const isDark = localStorage.getItem('darkMode') === 'true' ||
+                    (!('darkMode' in localStorage) &&
                      window.matchMedia('(prefers-color-scheme: dark)').matches);
       setIsDarkMode(isDark);
-      
+
       // Apply dark mode class to document if needed
       if (isDark) {
         document.documentElement.classList.add('dark');
       }
     }
   }, []);
-  
+
   // Handle scroll effect
   useEffect(() => {
     const handleScroll = () => {
@@ -96,10 +96,10 @@ const Header = () => {
   };
 
   return (
-    <motion.header 
-      className={`sticky top-0 z-50 w-full transition-all duration-300 ${isScrolled 
-        ? 'bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl shadow-lg' 
-        : 'bg-white/60 dark:bg-gray-900/60 backdrop-blur-md'} border-b border-gray-200/30 dark:border-gray-800/30`}
+    <motion.header
+      className={`sticky top-0 z-50 w-full transition-all duration-300 ${isScrolled
+        ? 'bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl shadow-lg'
+        : 'bg-white/60 dark:bg-gray-900/60 backdrop-blur-md'} border-b border-surface-200/30 dark:border-gray-800/30`}
       initial={{ y: -100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ type: 'spring', stiffness: 300, damping: 30 }}
@@ -110,15 +110,15 @@ const Header = () => {
           <div className="flex">
             <div className="flex-shrink-0 flex items-center">
               <Link href="/" className="flex items-center group">
-                <motion.div 
-                  className="mr-2 w-10 h-10 flex items-center justify-center bg-gradient-to-br from-primary-500 via-secondary-500 to-primary-600 rounded-lg shadow-lg ring-2 ring-white/10 dark:ring-gray-800/20"
+                <motion.div
+                  className="mr-2 w-10 h-10 flex items-center justify-center bg-gradient-to-br from-primary-500 to-accent-500 rounded-lg shadow-lg ring-2 ring-white/10 dark:ring-gray-800/20"
                   whileHover={{ rotate: 360, scale: 1.1 }}
                   transition={{ duration: 0.5, type: 'spring', stiffness: 300 }}
                 >
                   <span className="text-white font-bold text-lg">CV</span>
                 </motion.div>
-                <motion.span 
-                  className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary-600 via-secondary-500 to-primary-500 dark:from-primary-400 dark:via-secondary-400 dark:to-primary-300"
+                <motion.span
+                  className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-primary-500 dark:from-primary-400 dark:to-primary-300"
                   whileHover={{ scale: 1.05 }}
                   transition={{ duration: 0.2 }}
                 >
@@ -131,9 +131,9 @@ const Header = () => {
                 <Link
                   key={link.name}
                   href={link.href}
-                  className={`px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ${isActive(link.href) 
-                    ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300' 
-                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'}`}
+                  className={`px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ${isActive(link.href)
+                    ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
+                    : 'text-surface-700 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800'}`}
                 >
                   {link.name}
                 </Link>
@@ -147,7 +147,7 @@ const Header = () => {
             <div className="relative">
               <button
                 onClick={toggleLanguageMenu}
-                className="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white rounded-md px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
+                className="flex items-center text-sm font-medium text-surface-700 dark:text-surface-300 hover:text-surface-900 dark:hover:text-white rounded-md px-3 py-2 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors duration-200"
               >
                 <span className="mr-1">{currentLanguage.flag}</span>
                 <span>{currentLanguage.code}</span>
@@ -170,9 +170,9 @@ const Header = () => {
                         <button
                           key={lang.code}
                           onClick={() => handleLanguageChange(lang)}
-                          className={`w-full text-left px-4 py-2 text-sm ${currentLanguage.code === lang.code 
-                            ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300' 
-                            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}`}
+                          className={`w-full text-left px-4 py-2 text-sm ${currentLanguage.code === lang.code
+                            ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
+                            : 'text-surface-700 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-700'}`}
                           role="menuitem"
                         >
                           <span className="mr-2">{lang.flag}</span>
@@ -188,7 +188,7 @@ const Header = () => {
             {/* Dark Mode Toggle */}
             <button
               onClick={toggleDarkMode}
-              className="p-2 rounded-full text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
+              className="p-2 rounded-full text-surface-700 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors duration-200"
               aria-label="Toggle dark mode"
             >
               {isDarkMode ? (
@@ -217,7 +217,7 @@ const Header = () => {
               <div className="relative">
                 <button
                   onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
-                  className="flex items-center text-sm font-medium text-white rounded-md px-4 py-2 bg-gradient-to-r from-primary-600 via-secondary-600 to-primary-500 hover:from-primary-700 hover:via-secondary-700 hover:to-primary-600 shadow-md hover:shadow-lg transition-all duration-200 border border-white/10 dark:border-gray-800/30"
+                  className="flex items-center text-sm font-medium text-white rounded-md px-4 py-2 bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-700 hover:to-primary-600 shadow-md hover:shadow-lg transition-all duration-200 border border-white/10 dark:border-surface-800/30"
                 >
                   <svg className="mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path
@@ -232,7 +232,7 @@ const Header = () => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                   </svg>
                 </button>
-                
+
                 <AnimatePresence>
                   {isProfileMenuOpen && (
                     <motion.div
@@ -245,7 +245,7 @@ const Header = () => {
                       <div className="py-1" role="menu" aria-orientation="vertical">
                         <Link
                           href="/profile"
-                          className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                          className="block px-4 py-2 text-sm text-surface-700 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-700"
                           role="menuitem"
                           onClick={() => setIsProfileMenuOpen(false)}
                         >
@@ -253,7 +253,7 @@ const Header = () => {
                         </Link>
                         <Link
                           href="/challenges"
-                          className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                          className="block px-4 py-2 text-sm text-surface-700 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-700"
                           role="menuitem"
                           onClick={() => setIsProfileMenuOpen(false)}
                         >
@@ -261,7 +261,7 @@ const Header = () => {
                         </Link>
                         <Link
                           href="/badges"
-                          className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                          className="block px-4 py-2 text-sm text-surface-700 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-700"
                           role="menuitem"
                           onClick={() => setIsProfileMenuOpen(false)}
                         >
@@ -269,7 +269,7 @@ const Header = () => {
                         </Link>
                         <Link
                           href="/api/auth/signout"
-                          className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border-t border-gray-200 dark:border-gray-700"
+                          className="block px-4 py-2 text-sm text-surface-700 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-700 border-t border-surface-200 dark:border-surface-700"
                           role="menuitem"
                           onClick={() => setIsProfileMenuOpen(false)}
                         >
@@ -283,7 +283,7 @@ const Header = () => {
             ) : (
               <Link
                 href="/api/auth/signin"
-                className="flex items-center text-sm font-medium text-white rounded-md px-4 py-2 bg-gradient-to-r from-primary-600 via-secondary-600 to-primary-500 hover:from-primary-700 hover:via-secondary-700 hover:to-primary-600 shadow-md hover:shadow-lg transition-all duration-200 border border-white/10 dark:border-gray-800/30"
+                className="flex items-center text-sm font-medium text-white rounded-md px-4 py-2 bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-700 hover:to-primary-600 shadow-md hover:shadow-lg transition-all duration-200 border border-white/10 dark:border-surface-800/30"
               >
                 <svg className="mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path
@@ -302,7 +302,7 @@ const Header = () => {
           <div className="flex items-center sm:hidden">
             <button
               onClick={toggleMobileMenu}
-              className="inline-flex items-center justify-center p-2 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
+              className="inline-flex items-center justify-center p-2 rounded-md text-surface-700 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors duration-200"
               aria-expanded="false"
             >
               <span className="sr-only">Open main menu</span>
@@ -331,34 +331,34 @@ const Header = () => {
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.2 }}
-            className="sm:hidden bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800"
+            className="sm:hidden bg-white dark:bg-gray-900 border-b border-surface-200 dark:border-surface-800"
           >
             <div className="px-2 pt-2 pb-3 space-y-1">
               {navLinks.map((link) => (
                 <Link
                   key={link.name}
                   href={link.href}
-                  className={`block px-3 py-2 rounded-md text-base font-medium ${isActive(link.href) 
-                    ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300' 
-                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'}`}
+                  className={`block px-3 py-2 rounded-md text-base font-medium ${isActive(link.href)
+                    ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
+                    : 'text-surface-700 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800'}`}
                 >
                   {link.name}
                 </Link>
               ))}
             </div>
-            <div className="pt-4 pb-3 border-t border-gray-200 dark:border-gray-700">
+            <div className="pt-4 pb-3 border-t border-surface-200 dark:border-surface-700">
               <div className="flex items-center px-4 py-2">
                 {/* Language Selector */}
                 <div className="flex-1">
-                  <div className="text-base font-medium text-gray-800 dark:text-gray-200">Language</div>
+                  <div className="text-base font-medium text-surface-800 dark:text-surface-200">Language</div>
                   <div className="flex mt-1 space-x-2">
                     {languages.map((lang) => (
                       <button
                         key={lang.code}
                         onClick={() => handleLanguageChange(lang)}
-                        className={`flex items-center justify-center h-8 w-8 rounded-full ${currentLanguage.code === lang.code 
-                          ? 'bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300' 
-                          : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300'}`}
+                        className={`flex items-center justify-center h-8 w-8 rounded-full ${currentLanguage.code === lang.code
+                          ? 'bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300'
+                          : 'bg-surface-100 dark:bg-surface-800 text-surface-700 dark:text-surface-300'}`}
                       >
                         <span>{lang.flag}</span>
                       </button>
@@ -368,7 +368,7 @@ const Header = () => {
                 {/* Dark Mode Toggle */}
                 <button
                   onClick={toggleDarkMode}
-                  className="p-2 rounded-full text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                  className="p-2 rounded-full text-surface-700 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800"
                   aria-label="Toggle dark mode"
                 >
                   {isDarkMode ? (
@@ -397,19 +397,19 @@ const Header = () => {
                   <>
                     <Link
                       href="/profile"
-                      className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                      className="block px-3 py-2 rounded-md text-base font-medium text-surface-700 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800"
                     >
                       Profile
                     </Link>
                     <Link
                       href="/challenges"
-                      className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                      className="block px-3 py-2 rounded-md text-base font-medium text-surface-700 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800"
                     >
                       Challenges
                     </Link>
                     <Link
                       href="/api/auth/signout"
-                      className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                      className="block px-3 py-2 rounded-md text-base font-medium text-surface-700 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800"
                     >
                       Sign out
                     </Link>
@@ -418,13 +418,13 @@ const Header = () => {
                   <>
                     <Link
                       href="/api/auth/signin"
-                      className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                      className="block px-3 py-2 rounded-md text-base font-medium text-surface-700 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800"
                     >
                       Login
                     </Link>
                     <Link
                       href="/signup"
-                      className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                      className="block px-3 py-2 rounded-md text-base font-medium text-surface-700 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800"
                     >
                       Sign up
                     </Link>

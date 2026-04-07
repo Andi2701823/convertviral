@@ -3,13 +3,13 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { 
-  DocumentIcon, 
-  ImageIcon, 
-  VideoIcon, 
-  MusicIcon, 
-  ArchiveIcon, 
-  BookIcon 
+import {
+  DocumentIcon,
+  ImageIcon,
+  VideoIcon,
+  MusicIcon,
+  ArchiveIcon,
+  BookIcon
 } from './Icons';
 
 type ConversionCard = {
@@ -33,7 +33,7 @@ const conversionCards: ConversionCard[] = [
     fromFormat: 'PDF',
     toFormat: 'DOCX',
     icon: <DocumentIcon className="h-8 w-8" />,
-    color: 'from-blue-500 to-blue-600',
+    color: 'from-primary-500 to-primary-600',
     estimatedTime: '30 sec',
     usageCount: 1254789,
     category: 'document',
@@ -45,7 +45,7 @@ const conversionCards: ConversionCard[] = [
     fromFormat: 'DOCX',
     toFormat: 'PDF',
     icon: <DocumentIcon className="h-8 w-8" />,
-    color: 'from-blue-500 to-blue-600',
+    color: 'from-primary-500 to-primary-600',
     estimatedTime: '25 sec',
     usageCount: 987654,
     category: 'document',
@@ -57,7 +57,7 @@ const conversionCards: ConversionCard[] = [
     fromFormat: 'JPG',
     toFormat: 'PDF',
     icon: <ImageIcon className="h-8 w-8" />,
-    color: 'from-green-500 to-green-600',
+    color: 'from-accent-500 to-accent-600',
     estimatedTime: '20 sec',
     usageCount: 876543,
     category: 'image',
@@ -69,7 +69,7 @@ const conversionCards: ConversionCard[] = [
     fromFormat: 'PNG',
     toFormat: 'JPG',
     icon: <ImageIcon className="h-8 w-8" />,
-    color: 'from-green-500 to-green-600',
+    color: 'from-accent-500 to-accent-600',
     estimatedTime: '10 sec',
     usageCount: 765432,
     category: 'image',
@@ -129,7 +129,7 @@ const conversionCards: ConversionCard[] = [
     fromFormat: 'PDF',
     toFormat: 'JPG',
     icon: <ImageIcon className="h-8 w-8" />,
-    color: 'from-green-500 to-green-600',
+    color: 'from-accent-500 to-accent-600',
     estimatedTime: '40 sec',
     usageCount: 210987,
     category: 'image',
@@ -165,7 +165,7 @@ const conversionCards: ConversionCard[] = [
     fromFormat: 'ZIP',
     toFormat: 'RAR',
     icon: <ArchiveIcon className="h-8 w-8" />,
-    color: 'from-indigo-500 to-indigo-600',
+    color: 'from-primary-500 to-primary-600',
     estimatedTime: '50 sec',
     usageCount: 176543,
     category: 'archive',
@@ -177,7 +177,7 @@ const conversionCards: ConversionCard[] = [
     fromFormat: 'RAR',
     toFormat: 'ZIP',
     icon: <ArchiveIcon className="h-8 w-8" />,
-    color: 'from-indigo-500 to-indigo-600',
+    color: 'from-primary-500 to-primary-600',
     estimatedTime: '45 sec',
     usageCount: 165432,
     category: 'archive',
@@ -213,7 +213,7 @@ const conversionCards: ConversionCard[] = [
     fromFormat: 'PNG',
     toFormat: 'WebP',
     icon: <ImageIcon className="h-8 w-8" />,
-    color: 'from-green-500 to-green-600',
+    color: 'from-accent-500 to-accent-600',
     estimatedTime: '15 sec',
     usageCount: 132109,
     category: 'image',
@@ -225,7 +225,7 @@ const conversionCards: ConversionCard[] = [
     fromFormat: 'PPT',
     toFormat: 'PDF',
     icon: <DocumentIcon className="h-8 w-8" />,
-    color: 'from-blue-500 to-blue-600',
+    color: 'from-primary-500 to-primary-600',
     estimatedTime: '35 sec',
     usageCount: 121098,
     category: 'document',
@@ -261,7 +261,7 @@ const conversionCards: ConversionCard[] = [
     fromFormat: 'JPG',
     toFormat: 'PNG',
     icon: <ImageIcon className="h-8 w-8" />,
-    color: 'from-green-500 to-green-600',
+    color: 'from-accent-500 to-accent-600',
     estimatedTime: '15 sec',
     usageCount: 98765,
     category: 'image',
@@ -272,9 +272,9 @@ type CategoryFilter = 'all' | 'document' | 'image' | 'video' | 'audio' | 'ebook'
 
 const ConversionGrid = () => {
   const [activeCategory, setActiveCategory] = useState<CategoryFilter>('all');
-  
-  const filteredCards = activeCategory === 'all' 
-    ? conversionCards 
+
+  const filteredCards = activeCategory === 'all'
+    ? conversionCards
     : conversionCards.filter(card => card.category === activeCategory);
 
   const formatNumber = (num: number): string => {
@@ -296,7 +296,6 @@ const ConversionGrid = () => {
     { id: 'archive', name: 'Archives', icon: '🗄️' },
   ];
 
-  // Animation variants
   const container = {
     hidden: { opacity: 0 },
     show: {
@@ -313,11 +312,11 @@ const ConversionGrid = () => {
   };
 
   return (
-    <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-900">
+    <section className="py-16 px-4 sm:px-6 lg:px-8 bg-surface-50">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900 dark:text-white">Popular Conversion Types</h2>
-          <p className="text-lg text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-surface-900">Popular Conversion Types</h2>
+          <p className="text-lg text-surface-500 max-w-3xl mx-auto">
             Choose from our most popular file conversion options or explore all 100+ supported formats
           </p>
         </div>
@@ -328,9 +327,9 @@ const ConversionGrid = () => {
             <button
               key={category.id}
               onClick={() => setActiveCategory(category.id as CategoryFilter)}
-              className={`flex items-center px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${activeCategory === category.id 
-                ? 'bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300 shadow-sm' 
-                : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}`}
+              className={`flex items-center px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${activeCategory === category.id
+                ? 'bg-primary-100 text-primary-700 shadow-sm'
+                : 'bg-white text-surface-600 hover:bg-surface-100 border border-surface-200'}`}
             >
               <span className="mr-2">{category.icon}</span>
               {category.name}
@@ -339,55 +338,55 @@ const ConversionGrid = () => {
         </div>
 
         {/* Conversion cards grid */}
-        <motion.div 
+        <motion.div
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
           variants={container}
           initial="hidden"
           animate="show"
-          key={activeCategory} // This forces re-animation when category changes
+          key={activeCategory}
         >
           {filteredCards.map((card) => (
-            <motion.div 
+            <motion.div
               key={card.id}
               variants={item}
               whileHover={{ y: -5, transition: { duration: 0.2 } }}
-              className="group relative bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300"
+              className="group relative bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300"
             >
               {/* Gradient background that shows on hover */}
-              <div className="absolute inset-0 bg-gradient-to-br opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-0 ${card.color}"></div>
-              
+              <div className={`absolute inset-0 bg-gradient-to-br opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-0 ${card.color}`}></div>
+
               <Link href={`/convert/${card.id}`} className="block p-6 relative z-10">
                 <div className="flex items-center justify-between mb-4">
                   <div className={`inline-flex items-center justify-center h-12 w-12 rounded-lg bg-gradient-to-br ${card.color} text-white group-hover:bg-white group-hover:text-transparent group-hover:bg-clip-text transition-all duration-300`}>
                     {card.icon}
                   </div>
-                  <div className="text-xs font-medium text-gray-500 dark:text-gray-400 group-hover:text-white transition-colors duration-300">
+                  <div className="text-xs font-medium text-surface-400 group-hover:text-white transition-colors duration-300">
                     ~{card.estimatedTime}
                   </div>
                 </div>
-                
-                <h3 className="text-lg font-semibold mb-1 text-gray-900 dark:text-white group-hover:text-white transition-colors duration-300">
+
+                <h3 className="text-lg font-semibold mb-1 text-surface-900 group-hover:text-white transition-colors duration-300">
                   {card.title}
                 </h3>
-                
-                <p className="text-sm text-gray-500 dark:text-gray-400 group-hover:text-white group-hover:text-opacity-90 transition-colors duration-300 mb-4">
+
+                <p className="text-sm text-surface-500 group-hover:text-white group-hover:text-opacity-90 transition-colors duration-300 mb-4">
                   {card.description}
                 </p>
-                
+
                 <div className="flex items-center justify-between">
                   <div className="flex items-center">
-                    <span className="inline-block px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded text-xs font-medium text-gray-800 dark:text-gray-300 group-hover:bg-white group-hover:bg-opacity-20 group-hover:text-white transition-colors duration-300">
+                    <span className="inline-block px-2 py-1 bg-surface-100 rounded text-xs font-medium text-surface-700 group-hover:bg-white group-hover:bg-opacity-20 group-hover:text-white transition-colors duration-300">
                       {card.fromFormat}
                     </span>
-                    <svg className="h-4 w-4 mx-1 text-gray-400 dark:text-gray-500 group-hover:text-white transition-colors duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg className="h-4 w-4 mx-1 text-surface-400 group-hover:text-white transition-colors duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                     </svg>
-                    <span className="inline-block px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded text-xs font-medium text-gray-800 dark:text-gray-300 group-hover:bg-white group-hover:bg-opacity-20 group-hover:text-white transition-colors duration-300">
+                    <span className="inline-block px-2 py-1 bg-surface-100 rounded text-xs font-medium text-surface-700 group-hover:bg-white group-hover:bg-opacity-20 group-hover:text-white transition-colors duration-300">
                       {card.toFormat}
                     </span>
                   </div>
-                  
-                  <div className="text-xs text-gray-500 dark:text-gray-400 group-hover:text-white transition-colors duration-300">
+
+                  <div className="text-xs text-surface-400 group-hover:text-white transition-colors duration-300">
                     {formatNumber(card.usageCount)} uses
                   </div>
                 </div>
@@ -398,9 +397,9 @@ const ConversionGrid = () => {
 
         {/* View all button */}
         <div className="mt-12 text-center">
-          <Link 
+          <Link
             href="/convert"
-            className="inline-flex items-center justify-center bg-primary-600 hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-600 text-white font-medium px-6 py-3 rounded-lg shadow-md hover:shadow-lg transition-all duration-300"
+            className="inline-flex items-center justify-center bg-surface-900 hover:bg-surface-700 text-white font-medium px-6 py-3 rounded-lg shadow-sm hover:shadow-md transition-all duration-300"
           >
             View All 100+ Formats
             <svg className="ml-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
